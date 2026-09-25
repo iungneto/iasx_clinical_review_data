@@ -9,7 +9,7 @@ resources:
           notebook_task:
             notebook_path: ../src/jobs/00_bootstrap_landing.py
             base_parameters:
-              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+              landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
 
     # Ciclo completo da revisão:
     #   pipeline (extração/achados) → Jev (decisões estruturadas) → verificação on-chain → pipeline (estado final)
@@ -27,12 +27,12 @@ resources:
           notebook_task:
             notebook_path: ../src/jobs/jev_classify.py
             base_parameters:
-              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
-              fq_schema: ${var.catalog}.${var.schema}
+              landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
+              fq_schema: ${var.catalog}.${resources.schemas.iasx_schema.name}
               secret_scope: ${var.secret_scope}
               workflow_version: ${var.workflow_version}
               # "mock" permite ensaiar a demo sem chave; use "live" com a chave no secret scope.
-              jev_mode: live
+              jev_mode: mock
 
         - task_key: verify_onchain
           depends_on:
@@ -40,8 +40,8 @@ resources:
           notebook_task:
             notebook_path: ../src/jobs/verify_onchain.py
             base_parameters:
-              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
-              fq_schema: ${var.catalog}.${var.schema}
+              landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
+              fq_schema: ${var.catalog}.${resources.schemas.iasx_schema.name}
               solana_rpc_url: ${var.solana_rpc_url}
               solana_program_id: ${var.solana_program_id}
 

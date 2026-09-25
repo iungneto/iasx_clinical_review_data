@@ -16,7 +16,7 @@ resources:
         dependencies:
           - pypdf==5.4.0
       configuration:
-        iasx.landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+        iasx.landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
         iasx.workflow_version: ${var.workflow_version}
         iasx.model_version: ${var.model_version}
         # Limiar de apresentação de variação temporal (não é critério clínico).

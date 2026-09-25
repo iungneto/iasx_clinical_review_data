@@ -34,4 +34,4 @@ targets:
     default: true
     workspace:
       # URL do workspace Free Edition, ex.: https://dbc-xxxxxxxx-xxxx.cloud.databricks.com
-      host: https://REPLACE_WITH_YOUR_WORKSPACE.cloud.databricks.com
+      host: https://dbc-c45b5519-fb4f.cloud.databricks.com
