@@ -1,0 +1,37 @@
+# IASX Clinical Review — stack de dados (Databricks Free Edition + Lakeflow Declarative Pipelines)
+bundle:
+  name: iasx_clinical_review_data
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: Catálogo Unity Catalog (na Free Edition o catálogo padrão é "workspace").
+    default: workspace
+  schema:
+    description: Schema onde a pipeline publica bronze/silver/gold.
+    default: iasx_clinical
+  workflow_version:
+    description: Versão do workflow IASX (vai on-chain como metadado técnico).
+    default: "iasx-wf-1.0.0"
+  model_version:
+    description: Versão do motor de extração + Jev (vai on-chain como metadado técnico).
+    default: "extract-rules-1.0.0+jev-systemone"
+  secret_scope:
+    description: Secret scope com a chave da API do Jev (nunca no repositório).
+    default: iasx
+  solana_rpc_url:
+    description: Endpoint RPC da Solana usado na verificação.
+    default: https://api.devnet.solana.com
+  solana_program_id:
+    description: Program ID do programa de atestação na Devnet (preencher após o deploy do programa).
+    default: "REPLACE_WITH_PROGRAM_ID"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      # URL do workspace Free Edition, ex.: https://dbc-xxxxxxxx-xxxx.cloud.databricks.com
+      host: https://REPLACE_WITH_YOUR_WORKSPACE.cloud.databricks.com

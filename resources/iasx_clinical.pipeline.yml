@@ -1,0 +1,26 @@
+resources:
+  pipelines:
+    iasx_clinical_pipeline:
+      name: iasx_clinical_pipeline
+      catalog: ${var.catalog}
+      schema: ${resources.schemas.iasx_schema.name}
+      serverless: true          # Free Edition só oferece compute serverless
+      continuous: false         # disparada pelo job de orquestração (modo triggered)
+      development: true
+      channel: CURRENT
+      root_path: ../src/pipeline    # permite "from utilities.x import y" nos arquivos de transformação
+      libraries:
+        - glob:
+            include: ../src/pipeline/transformations/**
+      environment:
+        dependencies:
+          - pypdf==5.4.0
+      configuration:
+        iasx.landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+        iasx.workflow_version: ${var.workflow_version}
+        iasx.model_version: ${var.model_version}
+        # Limiar de apresentação de variação temporal (não é critério clínico).
+        iasx.temporal_variation_pct: "20"
+      tags:
+        project: iasx
+        data_classification: synthetic_only

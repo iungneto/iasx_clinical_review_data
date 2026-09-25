@@ -1,0 +1,53 @@
+resources:
+  jobs:
+    # Tarefas de notebook rodam em compute serverless (padrão da Free Edition quando nenhum cluster é informado).
+    # Prepara as pastas do volume e (opcionalmente) carrega os casos sintéticos A/B/C.
+    iasx_bootstrap:
+      name: iasx_bootstrap
+      tasks:
+        - task_key: bootstrap_landing
+          notebook_task:
+            notebook_path: ../src/jobs/00_bootstrap_landing.py
+            base_parameters:
+              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+
+    # Ciclo completo da revisão:
+    #   pipeline (extração/achados) → Jev (decisões estruturadas) → verificação on-chain → pipeline (estado final)
+    iasx_review_cycle:
+      name: iasx_review_cycle
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: extract_and_find
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.iasx_clinical_pipeline.id}
+
+        - task_key: jev_classify
+          depends_on:
+            - task_key: extract_and_find
+          notebook_task:
+            notebook_path: ../src/jobs/jev_classify.py
+            base_parameters:
+              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+              fq_schema: ${var.catalog}.${var.schema}
+              secret_scope: ${var.secret_scope}
+              workflow_version: ${var.workflow_version}
+              # "mock" permite ensaiar a demo sem chave; use "live" com a chave no secret scope.
+              jev_mode: live
+
+        - task_key: verify_onchain
+          depends_on:
+            - task_key: jev_classify
+          notebook_task:
+            notebook_path: ../src/jobs/verify_onchain.py
+            base_parameters:
+              landing_root: /Volumes/${var.catalog}/${var.schema}/landing
+              fq_schema: ${var.catalog}.${var.schema}
+              solana_rpc_url: ${var.solana_rpc_url}
+              solana_program_id: ${var.solana_program_id}
+
+        - task_key: refresh_review_state
+          depends_on:
+            - task_key: verify_onchain
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.iasx_clinical_pipeline.id}
+

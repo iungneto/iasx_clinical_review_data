@@ -1,0 +1,6 @@
+.databricks/
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+# data/synthetic NÃO é ignorado: o bundle precisa sincronizá-lo para o job de bootstrap.

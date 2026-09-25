@@ -1,0 +1,16 @@
+resources:
+  schemas:
+    iasx_schema:
+      catalog_name: ${var.catalog}
+      name: ${var.schema}
+      comment: IASX Clinical Review — somente dados sintéticos. Bronze/Silver/Gold da revisão clínica.
+
+  volumes:
+    landing:
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.iasx_schema.name}
+      name: landing
+      volume_type: MANAGED
+      comment: >
+        Zona de pouso off-chain. Subpastas: pdfs/<case_id>/, cases/, jev_decisions/,
+        review_decisions/, attestations/, attestation_verifications/, gabarito/.
