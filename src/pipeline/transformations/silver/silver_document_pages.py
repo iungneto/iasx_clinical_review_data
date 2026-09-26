@@ -1,9 +1,14 @@
+from pyspark import cloudpickle
 from pyspark import pipelines as dp
 from pyspark.sql import functions as F
 from pyspark.sql import types as T
 
+import utilities
 from utilities.clinical_rules import mask_identifiers
 from utilities.pdf_parsing import extract_pages
+
+# Os workers serverless não enxergam o root_path da pipeline: o pacote vai serializado junto com a UDF.
+cloudpickle.register_pickle_by_value(utilities)
 
 _PAGES_SCHEMA = T.StructType(
     [
