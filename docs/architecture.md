@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart LR
-  subgraph Portal["Portal web + backend (fora do Databricks)"]
+  subgraph Portal["Frontend JEV + backend (fora do Databricks), via API iasx-jev-api (Databricks App)"]
     UP[Upload PDF] ; REV[Tela de revisão] ; SOL[Envio da tx Solana]
   end
 

@@ -1,0 +1,56 @@
+resources:
+  apps:
+    # API consumida pelo JEV (frontend externo). O JEV chama servidor-a-servidor com token OAuth de um
+    # service principal que tenha CAN_USE neste app; o token do Databricks nunca vai para o navegador.
+    # As tabelas gold/silver abaixo são criadas pela pipeline: rode iasx_review_cycle antes do primeiro deploy do app.
+    iasx_jev_api:
+      name: iasx-jev-api
+      description: API do IASX para o frontend JEV — lê a gold pelo SQL Warehouse e grava eventos na landing.
+      source_code_path: ../src/app
+      permissions:
+        - service_principal_name: ${var.jev_client_id}
+          level: CAN_USE
+      config:
+        command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+        env:
+          - name: DATABRICKS_WAREHOUSE_ID
+            value_from: sql-warehouse
+          - name: IASX_REVIEW_CYCLE_JOB_ID
+            value_from: review-cycle-job
+          - name: IASX_FQ_SCHEMA
+            value: ${var.catalog}.${resources.schemas.iasx_schema.name}
+          - name: IASX_LANDING_ROOT
+            value: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+        - name: review-cycle-job
+          job:
+            id: ${resources.jobs.iasx_review_cycle.id}
+            permission: CAN_MANAGE_RUN
+        - name: landing-volume
+          uc_securable:
+            securable_type: VOLUME
+            securable_full_name: ${var.catalog}.${resources.schemas.iasx_schema.name}.${resources.volumes.landing.name}
+            permission: WRITE_VOLUME
+        # Somente leitura, e só das tabelas que a API expõe (bronze com PDF bruto fica de fora).
+        - name: gold-review-status
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_review_status"}
+        - name: gold-review-queue
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_review_queue"}
+        - name: gold-findings
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_findings"}
+        - name: silver-document-pages
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.silver_document_pages"}
+        - name: gold-timeline
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_timeline"}
+        - name: gold-temporal-comparison
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_temporal_comparison"}
+        - name: gold-attestation-payload
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_attestation_payload"}
+        - name: gold-mvp-metrics
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_mvp_metrics"}
+        - name: gold-benchmark
+          uc_securable: {securable_type: TABLE, permission: SELECT, securable_full_name: "${var.catalog}.${resources.schemas.iasx_schema.name}.gold_benchmark"}

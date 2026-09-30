@@ -21,6 +21,13 @@ variables:
   secret_scope:
     description: Secret scope com a chave da API do Jev (nunca no repositório).
     default: iasx
+  warehouse_id:
+    description: SQL Warehouse usado pela API do JEV (leitura da gold).
+    lookup:
+      warehouse: Serverless Starter Warehouse
+  jev_client_id:
+    description: applicationId do service principal jev-frontend (o JEV chama a API com ele; o secret fica só no JEV).
+    default: 85411c37-d717-4c8f-9d14-f632e63b9a41
   solana_rpc_url:
     description: Endpoint RPC da Solana usado na verificação.
     default: https://api.devnet.solana.com

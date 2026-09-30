@@ -1,4 +1,4 @@
--- Consultas que o backend do portal executa no SQL Warehouse (Statement Execution API, parâmetros nomeados).
+-- Consultas que a API iasx-jev-api (src/app/backend.py) executa no SQL Warehouse para o frontend JEV.
 -- A chave/token do Databricks fica só no backend. O frontend nunca fala direto com o Databricks.
 
 -- 1) Lista de casos com estado da revisão e status on-chain

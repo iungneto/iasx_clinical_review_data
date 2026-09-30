@@ -29,6 +29,7 @@ iasx_clinical_review_data/
 ├── resources/
 │   ├── iasx_unity_catalog.yml           # schema iasx_clinical + volume landing
 │   ├── iasx_clinical.pipeline.yml       # pipeline serverless (pypdf, configs iasx.*)
+│   ├── iasx_jev_api.app.yml             # Databricks App: API consumida pelo frontend JEV
 │   └── iasx_orchestration.job.yml       # jobs iasx_bootstrap e iasx_review_cycle
 ├── src/
 │   ├── pipeline/
@@ -40,6 +41,7 @@ iasx_clinical_review_data/
 │   │       ├── silver/                  # páginas, resultados, Auto CDC dos feeds
 │   │       └── gold/                    # MVs SQL: timeline, comparação, conflitos, lacunas,
 │   │                                    #   achados, fila, payload, estado, benchmark, métricas
+│   ├── app/                             # API FastAPI do JEV (app.py, backend.py, models.py)
 │   ├── jobs/
 │   │   ├── 00_bootstrap_landing.py      # cria pastas e carrega os casos sintéticos
 │   │   ├── jev_classify.py              # chama o Jev server-side
@@ -99,6 +101,59 @@ databricks bundle run iasx_review_cycle               # pipeline → Jev → ver
    (`tools/sample_events/attestation_case_c.json`) em `landing/attestations/`.
 5. Rode `iasx_review_cycle` de novo → `verify_onchain` lê a PDA, a pipeline compara os hashes e o caso vira
    **ATTESTED** (`gold_review_status.is_finalized = true`).
+
+### 6. API para o frontend JEV
+
+O **JEV** (frontend externo) conversa com o Databricks só pela API `iasx-jev-api`, um Databricks App (FastAPI)
+publicado pelo mesmo bundle. Não confundir com o **Jev da typesafe.ai**, o classificador chamado pelo job `jev_classify`.
+
+```bash
+databricks bundle deploy -t dev                      # as tabelas gold precisam existir (rode iasx_review_cycle antes)
+databricks bundle run iasx_jev_api -t dev            # inicia o app e mostra a URL
+```
+
+A documentação interativa (OpenAPI) fica em `<url do app>/docs`.
+
+| Método | Rota | O que faz |
+|---|---|---|
+| GET | `/api/health`, `/api/whoami` | teste de conexão e identidade de quem chamou |
+| GET | `/api/cases` | casos com estado da revisão e status on-chain |
+| GET | `/api/cases/{case_id}/queue` · `/timeline` · `/comparison` | fila de revisão, linha do tempo, comparação temporal |
+| GET | `/api/findings/{finding_id}/evidence` | fonte do achado (documento, página, linha, offsets) |
+| GET | `/api/documents/{document_id}/pages/{page_num}` | texto mascarado da página |
+| GET | `/api/reviews/{review_id}/attestation-payload` | payload que vai para a Solana |
+| GET | `/api/metrics` | métricas do MVP e benchmark |
+| POST | `/api/cases` | registra caso → `landing/cases/` |
+| POST | `/api/cases/{case_id}/documents/{document_id}` | upload do PDF (multipart `file`) → `landing/pdfs/` |
+| POST | `/api/review-decisions` | CONFIRM / CORRECT / REJECT / SIGNOFF → `landing/review_decisions/` |
+| POST | `/api/attestations` | recibo da tx Solana → `landing/attestations/` |
+| POST · GET | `/api/review-cycle/runs` · `/runs/{run_id}` | dispara `iasx_review_cycle` e acompanha a execução |
+
+A API preenche `created_at`, `decided_at` e `submitted_at` e valida os contratos de
+[docs/data_contracts.md](docs/data_contracts.md). As escritas só aparecem nas rotas GET depois de uma
+execução de `iasx_review_cycle`.
+
+**Autenticação.** Todo request precisa de `Authorization: Bearer <token OAuth do Databricks>`. As chamadas
+partem do **backend do JEV** (servidor-a-servidor); o token nunca vai para o navegador. Para isso:
+
+```bash
+databricks service-principals create --display-name jev-frontend        # anote o applicationId
+databricks service-principal-secrets-proxy create <id-numérico-do-SP>   # gera client_secret (guarde no cofre do JEV)
+```
+
+Depois, coloque o `applicationId` na variável `jev_client_id` de `databricks.yml`: o bundle concede `CAN_USE`
+no app a esse service principal a cada deploy. No workspace dev isso já está feito (`jev-frontend`).
+
+O backend do JEV troca as credenciais por um token (válido por 1 h) e chama a API:
+
+```bash
+curl -s -u "<applicationId>:<client_secret>" https://<workspace>/oidc/v1/token   -d grant_type=client_credentials -d scope=all-apis
+curl -H "Authorization: Bearer <access_token>" https://<url do app>/api/cases
+```
+
+O service principal do próprio app recebe, pelos `resources` do bundle, apenas: `CAN_USE` no SQL Warehouse,
+`SELECT` nas tabelas que a API expõe, `WRITE_VOLUME` na landing e `CAN_MANAGE_RUN` no `iasx_review_cycle`.
+A `bronze_documents` (PDF bruto) fica de fora.
 
 ## Decisões de projeto
 
