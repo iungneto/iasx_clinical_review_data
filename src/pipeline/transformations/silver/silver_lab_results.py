@@ -44,14 +44,14 @@ _parse_page_udf = F.udf(parse_page, _RESULT_SCHEMA)
 @dp.expect_all_or_drop(
     {
         "has_source": "source_text IS NOT NULL AND page_num IS NOT NULL",
-        "valid_status": "value_status IN ('OK', 'ILLEGIBLE', 'MISSING')",
+        "valid_status": "value_status IN ('OK', 'ILLEGIBLE', 'MISSING', 'AMBIGUOUS')",
     }
 )
 @dp.expect("value_present_when_ok", "value_status <> 'OK' OR value IS NOT NULL")
 def silver_lab_results():
     return (
         spark.readStream.table("silver_document_pages")
-        .where("is_textual")
+        .where("is_textual AND synthetic_declared")
         .select(
             "case_id",
             "document_id",

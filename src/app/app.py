@@ -2,6 +2,7 @@
 
 O JEV chama esta API servidor-a-servidor com um token OAuth do Databricks (service principal com CAN_USE no app).
 A API lê as tabelas gold pelo SQL Warehouse e grava eventos na landing; nunca escreve tabelas diretamente.
+Só aceita dados sintéticos e marca toda resposta com a finalidade pretendida (docs/regulatory/intended_use.md).
 Documentação interativa: <url do app>/docs
 """
 
@@ -12,11 +13,19 @@ from databricks.sdk.errors import AlreadyExists, NotFound, ResourceConflict
 from fastapi import FastAPI, File, HTTPException, Path, Request, UploadFile
 
 import backend
+from guards import INTENDED_USE, INTENDED_USE_HEADER, declares_synthetic
 from models import TECH_ID, AttestationIn, CaseIn, ReviewDecisionIn
 
 MAX_PDF_BYTES = 20 * 1024 * 1024
 
-app = FastAPI(title="IASX Clinical Review — API do JEV", version="1.0.0")
+app = FastAPI(title="IASX Clinical Review — API do JEV", version="1.1.0", description=INTENDED_USE)
+
+
+@app.middleware("http")
+async def intended_use_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-IASX-Intended-Use"] = INTENDED_USE_HEADER
+    return response
 
 TechId = Annotated[str, Path(pattern=TECH_ID)]
 
@@ -43,7 +52,7 @@ def _write(feed: str, record: dict) -> dict:
 @app.get("/api/health")
 def health():
     backend.query("SELECT 1 AS ok")
-    return {"status": "ok", "schema": backend.FQ_SCHEMA}
+    return {"status": "ok", "schema": backend.FQ_SCHEMA, "intended_use": INTENDED_USE}
 
 
 @app.get("/api/whoami")
@@ -111,6 +120,9 @@ async def upload_document(case_id: TechId, document_id: TechId, file: UploadFile
         raise HTTPException(413, "PDF maior que 20 MB")
     if not content.startswith(b"%PDF"):
         raise HTTPException(415, "o arquivo não é um PDF")
+    if not declares_synthetic(content):
+        # Recusado antes de gravar: documento real não pode nem chegar à landing (LGPD).
+        raise HTTPException(422, 'o MVP aceita somente PDFs sintéticos: o texto precisa conter "Documento sintético"')
     try:
         return {"landing_path": backend.write_pdf(case_id, document_id, content)}
     except (AlreadyExists, ResourceConflict):

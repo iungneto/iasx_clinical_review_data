@@ -15,9 +15,6 @@ variables:
   workflow_version:
     description: Versão do workflow IASX (vai on-chain como metadado técnico).
     default: "iasx-wf-1.0.0"
-  model_version:
-    description: Versão do motor de extração + Jev (vai on-chain como metadado técnico).
-    default: "extract-rules-1.0.0+jev-systemone"
   secret_scope:
     description: Secret scope com a chave da API do Jev (nunca no repositório).
     default: iasx
@@ -29,7 +26,7 @@ variables:
     description: applicationId do service principal jev-frontend (o JEV chama a API com ele; o secret fica só no JEV).
     default: 85411c37-d717-4c8f-9d14-f632e63b9a41
   solana_rpc_url:
-    description: Endpoint RPC da Solana usado na verificação.
+    description: Endpoint RPC da Solana usado na verificação. O MVP aceita somente Devnet (verify_onchain recusa outro cluster).
     default: https://api.devnet.solana.com
   solana_program_id:
     description: Program ID do programa de atestação na Devnet (preencher após o deploy do programa).

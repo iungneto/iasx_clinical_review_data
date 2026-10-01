@@ -7,10 +7,11 @@ SELECT case_id, review_id, scenario, review_state, onchain_status, is_finalized,
 FROM workspace.iasx_clinical.gold_review_status
 ORDER BY created_at DESC;
 
--- 2) Fila de revisão de um caso (prioridade de workflow, estado de cada achado, flags de segurança)
+-- 2) Fila de revisão de um caso (prioridade de workflow, justificativa, estado de cada achado, flags de segurança)
 SELECT finding_id, finding_type, finding_subtype, test_code, exam_date, summary,
        jev_status, jev_needs_review, jev_priority, jev_is_clear,
-       needs_review_final, priority_final, safety_flags, finding_state,
+       jev_model, jev_prompt_version,
+       needs_review_final, review_reasons, priority_final, priority_reason, safety_flags, finding_state,
        reviewer_action, corrected_value, corrected_unit
 FROM workspace.iasx_clinical.gold_review_queue
 WHERE case_id = :case_id

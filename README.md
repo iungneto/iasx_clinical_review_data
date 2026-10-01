@@ -4,6 +4,13 @@ Stack de dados do MVP **IASX Clinical Review** (IA + Jev + Blockchain) no **Data
 **Lakeflow Declarative Pipelines** (antigo DLT) como motor de pipelines e **Lakeflow Jobs** para orquestrar.
 Tudo é empacotado como **Declarative Automation Bundle** (antigo Asset Bundle) e publicado com a CLI `databricks`.
 
+> **Finalidade e limites.** Demonstração técnica com **dados 100% sintéticos**, sem pacientes reais e sem uso
+> assistencial. O IASX apoia a revisão e a estruturação de informação: **não diagnostica, não prescreve, não
+> recomenda tratamento e não substitui o profissional**. Não é regularizado na Anvisa. O JEV classifica e
+> prioriza a revisão; a Solana Devnet guarda só uma atestação técnica (hashes), nunca dado clínico.
+> Detalhes em [docs/regulatory/intended_use.md](docs/regulatory/intended_use.md); riscos, checklist do MVP e
+> pendências para um piloto real em [docs/regulatory/risk_and_compliance.md](docs/regulatory/risk_and_compliance.md).
+
 > **Community Edition × Free Edition:** a Community Edition antiga não tem Unity Catalog, volumes, jobs nem
 > pipelines declarativas. Este projeto usa a **Free Edition** (a substituta gratuita), que tem compute serverless,
 > Unity Catalog (catálogo `workspace`), Lakeflow Pipelines, Jobs e SQL Warehouse, com cotas de uso reduzidas.
@@ -11,7 +18,7 @@ Tudo é empacotado como **Declarative Automation Bundle** (antigo Asset Bundle) 
 ## Fluxo coberto (seções 6, 7 e 13 do documento)
 
 ```
-PDF sintético → bronze (Auto Loader) → páginas + CPF mascarado → resultados com fonte
+PDF sintético → bronze (Auto Loader) → páginas + identificadores mascarados → resultados com fonte
   → linha do tempo / comparação temporal / conflitos / lacunas → achados (finding_id determinístico)
   → Jev (Noul/Choice) + regras de segurança → fila de revisão → ações do profissional + signoff
   → payload de atestação (hashes) → tx Solana (backend) → verificação da PDA → ATTESTED
@@ -19,13 +26,15 @@ PDF sintético → bronze (Auto Loader) → páginas + CPF mascarado → resulta
 
 Arquitetura, estados e regras: [docs/architecture.md](docs/architecture.md) ·
 Contratos da landing: [docs/data_contracts.md](docs/data_contracts.md) ·
-Contrato com o programa Solana: [docs/onchain_account_layout.md](docs/onchain_account_layout.md)
+Contrato com o programa Solana: [docs/onchain_account_layout.md](docs/onchain_account_layout.md) ·
+Finalidade e limites: [docs/regulatory/intended_use.md](docs/regulatory/intended_use.md) ·
+Riscos e conformidade: [docs/regulatory/risk_and_compliance.md](docs/regulatory/risk_and_compliance.md)
 
 ## Estrutura
 
 ```
 iasx_clinical_review_data/
-├── databricks.yml                       # bundle: variáveis (catálogo, schema, versões, Solana) e target dev
+├── databricks.yml                       # bundle: variáveis (catálogo, schema, workflow, Solana) e target dev
 ├── resources/
 │   ├── iasx_unity_catalog.yml           # schema iasx_clinical + volume landing
 │   ├── iasx_clinical.pipeline.yml       # pipeline serverless (pypdf, configs iasx.*)
@@ -41,18 +50,22 @@ iasx_clinical_review_data/
 │   │       ├── silver/                  # páginas, resultados, Auto CDC dos feeds
 │   │       └── gold/                    # MVs SQL: timeline, comparação, conflitos, lacunas,
 │   │                                    #   achados, fila, payload, estado, benchmark, métricas
-│   ├── app/                             # API FastAPI do JEV (app.py, backend.py, models.py)
+│   ├── app/                             # API FastAPI do JEV (app.py, backend.py, models.py, guards.py)
 │   ├── jobs/
 │   │   ├── 00_bootstrap_landing.py      # cria pastas e carrega os casos sintéticos
-│   │   ├── jev_classify.py              # chama o Jev server-side
-│   │   └── verify_onchain.py            # lê a PDA na Solana Devnet
+│   │   ├── jev_classify.py              # chama o Jev server-side (notebook)
+│   │   ├── jev_contract.py              # perguntas, request/response e rastreabilidade do Jev
+│   │   ├── verify_onchain.py            # lê a PDA na Solana Devnet (notebook)
+│   │   └── onchain_layout.py            # layout da conta de atestação e trava de Devnet
 │   └── sql/portal_queries.sql           # consultas do backend do portal
 ├── tools/
-│   ├── generate_synthetic_cases.py      # gera PDFs A/B/C, cases.json, gabarito.csv
+│   ├── generate_synthetic_cases.py      # gera PDFs A–D, cases.json, gabarito.csv
+│   ├── mock_db/                         # base mockada: tabelas gold/silver exportadas + backend e API locais
 │   └── sample_events/                   # exemplos de eventos do portal/backend
 ├── data/synthetic/                      # saída do gerador (sincronizada pelo bundle)
 ├── docs/
-└── tests/test_clinical_rules.py
+│   └── regulatory/                      # finalidade pretendida, riscos, checklist do MVP, roadmap
+└── tests/                               # regras, API de ponta a ponta (mock), Jev, on-chain e conformidade
 ```
 
 ## Passo a passo
@@ -67,11 +80,24 @@ iasx_clinical_review_data/
 ### 2. Testes locais e dados sintéticos
 
 ```bash
-python -m venv .venv && .venv/Scripts/activate        # Linux/macOS: source .venv/bin/activate
-pip install -r requirements-dev.txt
-pytest -q                                             # também gera data/synthetic/
-python tools/generate_synthetic_cases.py              # (ou só isto, para gerar os dados)
+uv sync                                               # .venv Python 3.12 (Databricks Connect + pytest/pypdf/pydantic)
+uv run pytest -q                                      # também gera data/synthetic/
+uv run python tools/generate_synthetic_cases.py       # (ou só isto, para gerar os dados)
 ```
+
+Sem uv: `python -m venv .venv`, `pip install -r requirements-dev.txt` e `pytest -q`.
+
+**Base mockada.** `tools/mock_db/tables/` guarda um retrato das tabelas que a API lê (casos A–D, só silver/gold,
+já mascaradas). Com ela, `tests/test_api_endpoints.py` exercita a API inteira sem Databricks, e o frontend JEV
+pode ensaiar contra uma API local:
+
+```bash
+uv run python tools/mock_db/serve.py                  # http://127.0.0.1:8000/docs, escritas só em memória
+uv run python tools/mock_db/export_from_workspace.py --profile <perfil> --schema workspace.<schema>   # reexporta
+```
+
+Reexporte depois de mudar regras, perguntas do Jev ou colunas da gold; `tests/test_mock_db.py` falha se as
+colunas do `backend.py` deixarem de existir na base.
 
 ### 3. Segredo do Jev (nunca no repositório)
 
@@ -87,7 +113,7 @@ Sem chave ainda? Rode o job com `jev_mode=mock` para ensaiar a demo (resultado m
 ```bash
 databricks bundle validate
 databricks bundle deploy                              # cria schema, volume, pipeline e jobs
-databricks bundle run iasx_bootstrap                  # pastas da landing + casos A/B/C
+databricks bundle run iasx_bootstrap                  # pastas da landing + casos A–D
 databricks bundle run iasx_review_cycle               # pipeline → Jev → verificação → pipeline
 ```
 
@@ -96,6 +122,7 @@ databricks bundle run iasx_review_cycle               # pipeline → Jev → ver
 1. Consulte `gold_review_queue` (query 2 de `src/sql/portal_queries.sql`) e copie os `finding_id`.
 2. Preencha `tools/sample_events/review_decisions_case_c.json` e envie para a landing:
    `databricks fs cp tools/sample_events/review_decisions_case_c.json dbfs:/Volumes/workspace/iasx_clinical/landing/review_decisions/rd_001.json`
+   (no target `dev`, o schema é `dev_<usuário>_iasx_clinical`)
 3. Rode `iasx_review_cycle` → caso C fica `CONFIRMED`/`CORRECTED` e `ready_for_attestation = true`.
 4. O backend lê `gold_attestation_payload` (query 6), envia a tx para a Devnet e grava o recibo
    (`tools/sample_events/attestation_case_c.json`) em `landing/attestations/`.
@@ -133,6 +160,12 @@ A API preenche `created_at`, `decided_at` e `submitted_at` e valida os contratos
 [docs/data_contracts.md](docs/data_contracts.md). As escritas só aparecem nas rotas GET depois de uma
 execução de `iasx_review_cycle`.
 
+**Somente dados sintéticos.** `POST /api/cases` exige `"data_classification": "SYNTHETIC"`, e o upload recusa
+(422) PDF cujo texto não traga a declaração "Documento sintético". Campos técnicos (`case_id`, `scenario`,
+`reviewer_tech_id`, unidades, hashes, endereços Solana) não aceitam texto livre, e a atestação só aceita
+`cluster = devnet`. Toda resposta traz o cabeçalho `X-IASX-Intended-Use`, e `GET /api/health` devolve o
+texto da finalidade pretendida para o frontend exibir.
+
 **Autenticação.** Todo request precisa de `Authorization: Bearer <token OAuth do Databricks>`. As chamadas
 partem do **backend do JEV** (servidor-a-servidor); o token nunca vai para o navegador. Para isso:
 
@@ -155,19 +188,46 @@ O service principal do próprio app recebe, pelos `resources` do bundle, apenas:
 `SELECT` nas tabelas que a API expõe, `WRITE_VOLUME` na landing e `CAN_MANAGE_RUN` no `iasx_review_cycle`.
 A `bronze_documents` (PDF bruto) fica de fora.
 
+## Segurança (MVP)
+
+- **Segredos fora do código.** Chave do Jev no secret scope `iasx`; `client_secret` do JEV só no cofre do
+  backend do JEV; nenhum token no navegador. `tests/test_repo_compliance.py` varre os arquivos versionados.
+- **Acesso mínimo.** A API exige OAuth do Databricks (HTTPS do Databricks Apps) e só o service principal do JEV
+  tem `CAN_USE`; o app lê somente as tabelas que expõe (sem a bronze com o PDF bruto) e escreve só na landing.
+- **Dados.** Somente sintéticos, com travas na entrada; identificadores mascarados antes da silver.
+- **Logs** dos jobs registram só contagens e caminhos, nunca conteúdo de laudo.
+- **Blockchain** só na Devnet e só com hashes, versões e status.
+- **Ambiente** de desenvolvimento isolado (`mode: development`, schema com prefixo do usuário).
+
+## Limitações
+
+- Não diagnostica, não prescreve, não recomenda tratamento e não substitui o profissional; sem uso assistencial.
+- Extração por regras só para laudos no formato dos casos sintéticos; sem OCR (página digitalizada vira lacuna).
+- Sem conversão de unidades e sem faixa de referência externa; valor ambíguo ou ausente vira lacuna.
+- O limiar de variação temporal é de apresentação, não critério clínico; variação não implica causalidade.
+- A atestação prova que um compromisso técnico foi registrado, não que o laudo ou a interpretação estão corretos.
+- O hash de um documento pode ser associado a ele por quem o tem (risco R10 em
+  [risk_and_compliance.md](docs/regulatory/risk_and_compliance.md)).
+
 ## Decisões de projeto
 
 - **Extração determinística por regras** para o P0: reprodutível (hash da análise estável), sem custo de
   modelo e cada valor com offset exato no texto. A troca por `ai_parse_document`/`ai_query` pode ser feita
   depois, dentro de `silver_lab_results`, desde que mantenha o contrato de evidência.
 - **Faixa de referência só a do documento.** Sem faixa no PDF, o IASX registra lacuna em vez de usar uma tabela externa.
+- **Valor ambíguo não vira número.** `< 0,5` ou `1,0 ou 1,3` viram a lacuna `AMBIGUOUS_VALUE`; unidade diferente
+  entre coletas vira `UNIT_CHANGED`, sem conversão.
+- **Mascaramento com comprimento preservado.** Nome, CPF, CNS, nascimento, contato e médico/CRM são trocados por `*`
+  antes da silver; os offsets das evidências continuam válidos.
+- **`model_version` vem dos dados.** A atestação registra o extrator e o modelo do Jev que realmente geraram a
+  análise (ex.: `extract-rules-1.1.0+mock-jev`), não um valor configurado.
 - **Variação temporal ≥ 20%** (`iasx.temporal_variation_pct`) é um limiar de apresentação, não um critério clínico.
 - **Uma pipeline, um schema** (`bronze_*`, `silver_*`, `gold_*`) para caber nas cotas da Free Edition.
 - **Portal/backend escrevem só na landing**; lê gold via SQL Warehouse. A pipeline é a única que escreve tabelas.
 
 ## Pendências a validar antes da demo
 
-- **Contrato da API do Jev:** `build_request`/`extract_answer` em `src/jobs/jev_classify.py` seguem o que o
+- **Contrato da API do Jev:** `build_request`/`extract_answer` em `src/jobs/jev_contract.py` seguem o que o
   documento descreve (`POST /v1/systemone`, `GET /v1/models`, Bearer, Noul/Choice). Confira os campos exatos em
   https://api.typesafe.ai/docs. Qualquer resposta fora do esperado vira `jev_response_valid = false`, e isso força revisão humana.
 - **Layout da conta Solana:** alinhar `docs/onchain_account_layout.md` com o programa Anchor e preencher

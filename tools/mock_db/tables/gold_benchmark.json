@@ -1,0 +1,262 @@
+[
+ {
+  "case_id": "CASE-B",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UP",
+  "test_code": "CREA",
+  "exam_date": "2026-04-02",
+  "finding_ids": [
+   "15521e3b9d3779c7c5d002983f6c5acc86aa9ff90b5c59c622aae070e2e3ec0b"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-B",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-04-02",
+  "finding_ids": [
+   "3b45536e6805db7594f2a99a864544a91c4770c12dbf44b9455f66529a107c9b"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-B",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "CREA",
+  "exam_date": "2026-04-02",
+  "finding_ids": [
+   "603a3fc8615db7fb0b2641da498a4e17358144d19fc2912686fb2a76ded66456"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-B",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UP",
+  "test_code": "GLU",
+  "exam_date": "2026-04-02",
+  "finding_ids": [
+   "b12d6f667daa01379cfabb7aa811c28aa291f12b403dbc78f5eb1b93a69c5e96"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_REFERENCE_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-03-12",
+  "finding_ids": [
+   "2cf680ada17e90e9855fb6b7cd71d9663185188ef6b6965c9adb33cd0cd9bf36"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "K",
+  "exam_date": "2026-03-12",
+  "finding_ids": [
+   "3183602e24d011cc1d27dcdb3e1d183c874e5405f26aefef65ed7dc324f3ab3d"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "CONFLICT",
+  "finding_subtype": "DIVERGENT_VALUES",
+  "test_code": "K",
+  "exam_date": "2026-03-12",
+  "finding_ids": [
+   "388b384ba1d014c9ee35d5d6d70baaa9c27d53c4e2a38626781d716473f69e26"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "BELOW_DOCUMENT_RANGE",
+  "test_code": "HGB",
+  "exam_date": "2026-03-12",
+  "finding_ids": [
+   "aa84aedc6788f5281b7233ac0fdae777c43afa51cde9c296bfbeb5cde972537a"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "ILLEGIBLE_VALUE",
+  "test_code": "NA",
+  "exam_date": "2026-03-12",
+  "finding_ids": [
+   "b804df20bbde6742c8619508583453cbf9d34d3b5961f745acd9ac80957fa997"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_REFERENCE_RANGE",
+  "test_code": "HBA1C",
+  "exam_date": null,
+  "finding_ids": [
+   "53cf1439bc81f7f6f194d3fe685202ee135c48ecf7e0a05931e718b12db4fb24"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_DATE",
+  "test_code": "HBA1C",
+  "exam_date": null,
+  "finding_ids": [
+   "87a204be8351dc45aab7786a4729c73375042ef300815401673372e3ff4c98fb"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "NON_TEXTUAL_PAGE",
+  "test_code": null,
+  "exam_date": null,
+  "finding_ids": [
+   "80a09d6a992c90b536976494cf79e1475743c405e7f5f9293f9f02a6c50ffbd8"
+  ],
+  "expected_page": 2,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-01-15",
+  "finding_ids": [
+   "262f7aee2c84d9e01fe214f4d30c58b24cf5a82351b6611024118d430ea7ab03"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_UNIT",
+  "test_code": "K",
+  "exam_date": "2026-01-15",
+  "finding_ids": [
+   "e354412a626fc862d984865ce2f18050e6e86c87f44c3fe943444efbb60261bf"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "AMBIGUOUS_VALUE",
+  "test_code": "CREA",
+  "exam_date": "2026-03-01",
+  "finding_ids": [
+   "1bb6debb51a32a2f51a8e67fc033ce93ca1eb51209c1faddc02c9868e2a83417"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UNIT_CHANGED",
+  "test_code": "GLU",
+  "exam_date": "2026-03-01",
+  "finding_ids": [
+   "54797770a44838135760d30bd455969c92bbdf54bce2c92b677ff76201d246a7"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UNIT_CHANGED",
+  "test_code": "K",
+  "exam_date": "2026-03-01",
+  "finding_ids": [
+   "d5a22c18df0a83fbd0d3852658540a035b68ea4bc9a94fcf8c962d960c4d5377"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "AMBIGUOUS_VALUE",
+  "test_code": "CRP",
+  "exam_date": "2026-03-01",
+  "finding_ids": [
+   "e1fe6b9859c181bd65b3cb39695f4a97530226bf86ba6f37d4560ab6ba1e14cb"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-03-01",
+  "finding_ids": [
+   "fd21b60848c1305e63ee528ade54d89dc24330657f3d5bed2a316e0ca15ac88c"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ },
+ {
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "NOT_SYNTHETIC_DOCUMENT",
+  "test_code": null,
+  "exam_date": null,
+  "finding_ids": [
+   "66cb1c479c46d27591de064c817ff123410aa3f7aedd6d7428c84fe6d33c6442"
+  ],
+  "expected_page": 1,
+  "outcome": "MATCHED",
+  "source_page_matches": true
+ }
+]

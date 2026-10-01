@@ -44,16 +44,16 @@ A pipeline, então, compara o que está on-chain com o payload recalculado — e
 | Bronze | `bronze_documents` | Streaming table (Auto Loader `binaryFile`) | PDF bruto + `input_hash` (sha256). Única tabela com conteúdo original. |
 | Bronze | `bronze_cases`, `bronze_jev_decisions`, `bronze_review_decisions`, `bronze_attestations`, `bronze_attestation_verifications` | Streaming tables (Auto Loader JSON) | Feeds de eventos, schema explícito + `_rescued_data`. |
 | Bronze | `bronze_gabarito` | Materialized view | Gabarito dos casos sintéticos. |
-| Silver | `silver_document_pages` | Streaming table | Texto por página (pypdf), CPF mascarado, `is_textual`, `parse_error`. |
+| Silver | `silver_document_pages` | Streaming table | Texto por página (pypdf), identificadores mascarados, `is_textual`, `parse_error`, `synthetic_declared` (sem a declaração, o texto não é propagado). |
 | Silver | `silver_lab_results` | Streaming table | Resultado de exame com fonte: documento, página, linha, offsets, trecho. |
 | Silver | `silver_cases`, `silver_jev_decisions`, `silver_review_decisions`, `silver_attestations`, `silver_attestation_verifications` | Streaming tables via **Auto CDC (SCD1)** | Último estado por chave, com expectations. |
 | Gold | `gold_timeline` | MV | Linha do tempo. |
 | Gold | `gold_temporal_comparison` | MV | Variação entre coletas consecutivas. |
 | Gold | `gold_conflicts` | MV | Mesmo exame/data com valores divergentes — sem escolher versão. |
-| Gold | `gold_gaps` | MV | Data/valor/unidade/faixa ausentes, ilegível, página sem texto. |
+| Gold | `gold_gaps` | MV | Data/valor/unidade/faixa ausentes, valor ilegível ou ambíguo, página sem texto, documento não sintético. |
 | Gold | `gold_findings` | MV | Achados consolidados com `finding_id` determinístico. **Falha a atualização se algum achado não tiver fonte.** |
-| Gold | `gold_review_queue` | MV | Achado + Jev + regras de segurança + ação do profissional. |
-| Gold | `gold_attestation_payload` | MV | `input_hash`, `analysis_hash`, `reviewed_hash`, versões, status alvo. |
+| Gold | `gold_review_queue` | MV | Achado + Jev + regras de segurança + justificativa (`review_reasons`, `priority_reason`) + ação do profissional. |
+| Gold | `gold_attestation_payload` | MV | `input_hash`, `analysis_hash`, `reviewed_hash`, versões (`model_version` derivado do extrator e do Jev usados), status alvo. |
 | Gold | `gold_review_status` | MV | Máquina de estados + verificação on-chain. |
 | Gold | `gold_benchmark`, `gold_mvp_metrics` | MV | Cobertura, precisão de fonte, tempos, taxas. |
 
@@ -76,12 +76,15 @@ finalizada até uma nova atestação. É isso que torna a blockchain parte da l�
 
 | Princípio do MVP | Onde |
 |---|---|
-| Nenhuma informação ausente inventada | `clinical_rules.parse_page` (sem data/unidade/faixa = `None`); faixa só a do documento |
+| Nenhuma informação ausente inventada | `clinical_rules.parse_page` (sem data/unidade/faixa = `None`; valor ambíguo = `AMBIGUOUS`); faixa só a do documento |
 | Cada achado aponta para a fonte | `evidence` em todas as tabelas gold; `gold_findings` com `ON VIOLATION FAIL UPDATE` |
 | Conflitos sinalizados sem decisão automática | `gold_conflicts` lista todas as versões; revisão forçada |
-| Jev decide workflow, não clínica | perguntas fixas Noul/Choice em `jev_classify.py`; sobreposição de segurança em `gold_review_queue` |
+| Jev decide workflow, não clínica | perguntas fixas Noul/Choice em `jev_contract.py`; sobreposição de segurança e justificativa em `gold_review_queue` |
 | Dados clínicos off-chain | `gold_attestation_payload` contém só hashes/versões/IDs técnicos |
-| Identificadores diretos | CPF mascarado antes da silver; bronze com conteúdo bruto fica restrita |
+| Somente dados sintéticos | API exige `data_classification = SYNTHETIC` e PDF com a declaração; pipeline não propaga texto sem a declaração (`NOT_SYNTHETIC_DOCUMENT`) |
+| Identificadores diretos | nome, CPF, CNS, nascimento, contato e médico mascarados antes da silver; bronze com conteúdo bruto fica restrita |
+| Rastreabilidade de versão | `extractor_version`, `jev_model`, `jev_prompt_version`, hash do envio e resposta bruta do Jev |
+| Solana só na Devnet | API (`cluster = devnet`), expectation em `silver_attestations` e `assert_devnet` em `verify_onchain` |
 | Chaves fora do código | chave do Jev em secret scope; token Databricks só no backend |
 
 ## Por que estes componentes

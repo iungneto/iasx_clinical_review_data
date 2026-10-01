@@ -8,6 +8,8 @@ from pyspark import pipelines as dp
         "has_ts": "created_at IS NOT NULL",
     }
 )
+# A API exige data_classification = SYNTHETIC; registros antigos sem o campo ficam só na métrica.
+@dp.expect("declared_synthetic", "data_classification = 'SYNTHETIC'")
 def cases_clean():
     return spark.readStream.table("bronze_cases").drop("_rescued_data", "_source_file")
 

@@ -2,8 +2,9 @@
 # MAGIC %md
 # MAGIC # IASX — bootstrap da landing zone
 # MAGIC Cria as subpastas do volume `landing` e, se `load_synthetic = true`, copia os casos sintéticos
-# MAGIC (PDFs A/B/C, registro de casos e gabarito) que o bundle sincronizou em `data/synthetic/`.
-# MAGIC Idempotente: pode ser executado várias vezes.
+# MAGIC (PDFs A–D, registro de casos e gabarito) que o bundle sincronizou em `data/synthetic/`.
+# MAGIC Idempotente e sem sobrescrever a landing (o Auto Loader ingere cada arquivo uma única vez):
+# MAGIC PDFs existentes são mantidos e o registro de casos ganha um nome pelo hash do conteúdo.
 
 # COMMAND ----------
 
@@ -25,6 +26,7 @@ FOLDERS = [
 
 # COMMAND ----------
 
+import hashlib
 import os
 import shutil
 
@@ -42,15 +44,24 @@ if load_synthetic:
             f"{synthetic_dir} não encontrado. Gere os casos com tools/generate_synthetic_cases.py e rode 'databricks bundle deploy'."
         )
 
-    copied = 0
+    copied = skipped = 0
     for root, _, files in os.walk(os.path.join(synthetic_dir, "pdfs")):
         for name in files:
             if name.endswith(".pdf"):
                 case_id = os.path.basename(root)
-                os.makedirs(f"{landing_root}/pdfs/{case_id}", exist_ok=True)
-                shutil.copyfile(os.path.join(root, name), f"{landing_root}/pdfs/{case_id}/{name}")
+                target = f"{landing_root}/pdfs/{case_id}/{name}"
+                if os.path.exists(target):
+                    skipped += 1
+                    continue
+                os.makedirs(os.path.dirname(target), exist_ok=True)
+                shutil.copyfile(os.path.join(root, name), target)
                 copied += 1
 
-    shutil.copyfile(os.path.join(synthetic_dir, "cases.json"), f"{landing_root}/cases/cases_seed.json")
+    cases_src = os.path.join(synthetic_dir, "cases.json")
+    with open(cases_src, "rb") as fh:
+        cases_target = f"{landing_root}/cases/cases_seed_{hashlib.sha256(fh.read()).hexdigest()[:12]}.json"
+    if not os.path.exists(cases_target):
+        shutil.copyfile(cases_src, cases_target)
+    # O gabarito é lido em batch (materialized view), então pode ser substituído.
     shutil.copyfile(os.path.join(synthetic_dir, "gabarito.csv"), f"{landing_root}/gabarito/gabarito.csv")
-    print(f"{copied} PDFs sintéticos copiados + cases_seed.json + gabarito.csv")
+    print(f"{copied} PDFs sintéticos copiados ({skipped} já existiam) + {os.path.basename(cases_target)} + gabarito.csv")

@@ -14,17 +14,21 @@ def jev_decisions_clean():
         "lower(priority) AS priority",
         "is_clear",
         "jev_model",
+        "jev_prompt_version",
         "jev_request_hash",
+        "jev_raw_answers",
         "coalesce(jev_response_valid, false) "
         "  AND lower(priority) IN ('baixa', 'media', 'alta') "
         "  AND needs_review IS NOT NULL AND is_clear IS NOT NULL AS jev_response_valid",
+        "workflow_version",
         "decided_at",
     )
 
 
 dp.create_streaming_table(
     name="silver_jev_decisions",
-    comment="Última decisão estruturada do Jev por achado (Noul: precisa de revisão? / Choice: prioridade / Noul: está claro?).",
+    comment="Última decisão estruturada do Jev por achado (Noul: precisa de revisão? / Choice: prioridade / Noul: está claro?), "
+    "com modelo, versão das perguntas, hash do envio e resposta bruta.",
     table_properties={"iasx.layer": "silver"},
 )
 dp.create_auto_cdc_flow(

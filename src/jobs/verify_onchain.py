@@ -2,9 +2,10 @@
 # MAGIC %md
 # MAGIC # IASX — verificação da atestação on-chain (Solana Devnet)
 # MAGIC Para cada atestação ainda não verificada (ou cuja última verificação falhou):
+# MAGIC 0. recusa qualquer RPC fora da Devnet (o MVP só atesta na Devnet);
 # MAGIC 1. confirma a transação (`getSignatureStatuses`);
 # MAGIC 2. lê a conta PDA da revisão (`getAccountInfo`), checa o owner = programa IASX e decodifica o layout
-# MAGIC    descrito em `docs/onchain_account_layout.md`;
+# MAGIC    descrito em `docs/onchain_account_layout.md` (`onchain_layout.py`);
 # MAGIC 3. grava o resultado em `landing/attestation_verifications/`.
 # MAGIC
 # MAGIC A comparação dos hashes on-chain com o payload recalculado é feita na pipeline (`gold_review_status`):
@@ -25,18 +26,18 @@ program_id = dbutils.widgets.get("solana_program_id")
 # COMMAND ----------
 
 import base64
-import hashlib
 import json
-import struct
+import os
+import sys
 import uuid
 from datetime import datetime, timezone
 
 import requests
 
-# Layout Anchor da conta ReviewAttestation (ver docs/onchain_account_layout.md)
-STATUS = {0: "CREATED", 1: "PROCESSING", 2: "AI_REVIEW_READY", 3: "HUMAN_REVIEW_REQUIRED",
-          4: "CONFIRMED", 5: "CORRECTED", 6: "ATTESTED"}
-ACCOUNT_SIZE = 8 + 32 * 4 + 32 + 32 + 1 + 32 + 8 + 1
+sys.path.insert(0, os.getcwd())  # o notebook roda em src/jobs, ao lado de onchain_layout.py
+from onchain_layout import assert_devnet, decode_account, review_id_hash  # noqa: E402
+
+assert_devnet(rpc_url)
 
 
 def rpc(method: str, params: list):
@@ -46,30 +47,6 @@ def rpc(method: str, params: list):
     if "error" in body:
         raise RuntimeError(f"{method}: {body['error']}")
     return body["result"]
-
-
-def decode_account(data: bytes) -> dict:
-    if len(data) < ACCOUNT_SIZE:
-        raise ValueError(f"conta com {len(data)} bytes, esperado >= {ACCOUNT_SIZE}")
-    o = 8  # discriminator Anchor
-    review_id_hash, input_hash, analysis_hash, reviewed_hash = (data[o + 32 * i : o + 32 * (i + 1)].hex() for i in range(4))
-    o += 128
-    workflow_version = data[o : o + 32].rstrip(b"\0").decode()
-    model_version = data[o + 32 : o + 64].rstrip(b"\0").decode()
-    o += 64
-    status = STATUS.get(data[o], f"UNKNOWN_{data[o]}")
-    o += 1 + 32  # status + reviewer pubkey
-    (attested_at,) = struct.unpack_from("<q", data, o)
-    return {
-        "review_id_hash": review_id_hash,
-        "input_hash": input_hash,
-        "analysis_hash": analysis_hash,
-        "reviewed_hash": reviewed_hash,
-        "workflow_version": workflow_version,
-        "model_version": model_version,
-        "status": status,
-        "attested_at": attested_at,
-    }
 
 
 def verify(att) -> dict:
@@ -101,7 +78,7 @@ def verify(att) -> dict:
             result["error"] = f"owner inesperado: {account['owner']}"
             return result
         decoded = decode_account(base64.b64decode(account["data"][0]))
-        if decoded["review_id_hash"] != hashlib.sha256(att.review_id.encode()).hexdigest():
+        if decoded["review_id_hash"] != review_id_hash(att.review_id):
             result["error"] = "review_id_hash on-chain não corresponde ao review_id"
             return result
         result.update(

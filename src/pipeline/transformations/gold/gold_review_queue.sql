@@ -4,6 +4,7 @@
 --   * Jev ausente ou com resposta fora do schema → revisão humana com prioridade alta;
 --   * informação marcada como pouco clara pelo Jev → revisão humana;
 --   * conflito nunca fica com prioridade baixa.
+-- review_reasons e priority_reason registram a justificativa objetiva de cada decisão final (rastreabilidade).
 CREATE OR REFRESH MATERIALIZED VIEW gold_review_queue
 COMMENT 'Achados priorizados para o portal, com o resultado estruturado do Jev e as sobreposições de segurança.'
 CLUSTER BY (case_id)
@@ -17,6 +18,7 @@ AS WITH joined AS (
     j.priority AS jev_priority,
     j.is_clear AS jev_is_clear,
     j.jev_model,
+    j.jev_prompt_version,
     j.decided_at AS jev_decided_at,
     d.action AS reviewer_action,
     d.corrected_value,
@@ -40,6 +42,20 @@ safety AS (
       WHEN finding_type = 'CONFLICT' AND jev_priority = 'baixa' THEN 'media'
       ELSE jev_priority
     END AS priority_final,
+    CASE
+      WHEN NOT has_jev THEN 'DEFAULT_HIGH_JEV_PENDING'
+      WHEN NOT jev_valid THEN 'DEFAULT_HIGH_JEV_INVALID'
+      WHEN finding_type = 'CONFLICT' AND jev_priority = 'baixa' THEN 'CONFLICT_MIN_MEDIUM'
+      ELSE 'JEV_PRIORITY'
+    END AS priority_reason,
+    filter(array(
+      CASE WHEN finding_type = 'CONFLICT' THEN 'CONFLICT_ALWAYS_REVIEWED' END,
+      CASE WHEN finding_type = 'GAP' THEN 'GAP_ALWAYS_REVIEWED' END,
+      CASE WHEN NOT has_jev THEN 'JEV_PENDING' END,
+      CASE WHEN has_jev AND NOT jev_valid THEN 'JEV_INVALID_RESPONSE' END,
+      CASE WHEN jev_valid AND jev_needs_review THEN 'JEV_REQUESTED_REVIEW' END,
+      CASE WHEN jev_valid AND NOT jev_is_clear THEN 'JEV_LOW_CLARITY' END
+    ), x -> x IS NOT NULL) AS review_reasons,
     filter(array(
       CASE WHEN finding_type = 'CONFLICT' THEN 'FORCED_REVIEW_CONFLICT' END,
       CASE WHEN finding_type = 'GAP' THEN 'FORCED_REVIEW_GAP' END,

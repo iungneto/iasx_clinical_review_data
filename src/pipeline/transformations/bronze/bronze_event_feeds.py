@@ -9,12 +9,14 @@ LANDING = spark.conf.get("iasx.landing_root")
 FEEDS = {
     "cases": (
         "Registro técnico de casos/revisões (sem identificação de paciente).",
-        "case_id STRING, review_id STRING, scenario STRING, created_at TIMESTAMP, manual_review_seconds_baseline INT",
+        "case_id STRING, review_id STRING, data_classification STRING, scenario STRING, created_at TIMESTAMP, "
+        "manual_review_seconds_baseline INT",
     ),
     "jev_decisions": (
         "Saída estruturada do Jev (Noul/Choice) por achado, gravada pelo job jev_classify.",
         "finding_id STRING, review_id STRING, needs_review BOOLEAN, priority STRING, is_clear BOOLEAN, "
-        "jev_model STRING, jev_request_hash STRING, jev_response_valid BOOLEAN, decided_at TIMESTAMP",
+        "jev_model STRING, jev_prompt_version STRING, jev_request_hash STRING, jev_raw_answers STRING, "
+        "jev_response_valid BOOLEAN, workflow_version STRING, decided_at TIMESTAMP",
     ),
     "review_decisions": (
         "Ações do profissional no portal: CONFIRM / CORRECT / REJECT por achado e SIGNOFF da revisão.",

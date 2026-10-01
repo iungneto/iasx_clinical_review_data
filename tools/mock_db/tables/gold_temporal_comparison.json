@@ -1,0 +1,266 @@
+[
+ {
+  "case_id": "CASE-B",
+  "test_code": "HGB",
+  "test_name_raw": "Hemoglobina",
+  "previous_date": "2026-02-20",
+  "exam_date": "2026-04-02",
+  "days_between": 41,
+  "previous_value": 13.2,
+  "value": 13.4,
+  "previous_unit": "g/dL",
+  "unit": "g/dL",
+  "delta_abs": 0.2,
+  "delta_pct": 1.52,
+  "direction": "STABLE",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 163,
+    "source_text": "Hemoglobina: 13,2 g/dL (VR: 12,0 - 16,0)"
+   },
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 163,
+    "source_text": "Hemoglobina: 13,4 g/dL (VR: 12,0 - 16,0)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-B",
+  "test_code": "CREA",
+  "test_name_raw": "Creatinina",
+  "previous_date": "2026-02-20",
+  "exam_date": "2026-04-02",
+  "days_between": 41,
+  "previous_value": 1.1,
+  "value": 1.5,
+  "previous_unit": "mg/dL",
+  "unit": "mg/dL",
+  "delta_abs": 0.4,
+  "delta_pct": 36.36,
+  "direction": "UP",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,1 mg/dL (VR: 0,6 - 1,2)"
+   },
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,5 mg/dL (VR: 0,6 - 1,2)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-B",
+  "test_code": "GLU",
+  "test_name_raw": "Glicemia de jejum",
+  "previous_date": "2026-02-20",
+  "exam_date": "2026-04-02",
+  "days_between": 41,
+  "previous_value": 95.0,
+  "value": 118.0,
+  "previous_unit": "mg/dL",
+  "unit": "mg/dL",
+  "delta_abs": 23.0,
+  "delta_pct": 24.21,
+  "direction": "UP",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 243,
+    "source_text": "Glicemia de jejum: 95 mg/dL (VR: 70 - 99)"
+   },
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 244,
+    "source_text": "Glicemia de jejum: 118 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-B",
+  "test_code": "HGB",
+  "test_name_raw": "Hemoglobina",
+  "previous_date": "2026-01-05",
+  "exam_date": "2026-02-20",
+  "days_between": 46,
+  "previous_value": 13.5,
+  "value": 13.2,
+  "previous_unit": "g/dL",
+  "unit": "g/dL",
+  "delta_abs": -0.3,
+  "delta_pct": -2.22,
+  "direction": "STABLE",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260105",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 163,
+    "source_text": "Hemoglobina: 13,5 g/dL (VR: 12,0 - 16,0)"
+   },
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 163,
+    "source_text": "Hemoglobina: 13,2 g/dL (VR: 12,0 - 16,0)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-B",
+  "test_code": "CREA",
+  "test_name_raw": "Creatinina",
+  "previous_date": "2026-01-05",
+  "exam_date": "2026-02-20",
+  "days_between": 46,
+  "previous_value": 1.0,
+  "value": 1.1,
+  "previous_unit": "mg/dL",
+  "unit": "mg/dL",
+  "delta_abs": 0.1,
+  "delta_pct": 10.0,
+  "direction": "UP",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260105",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,0 mg/dL (VR: 0,6 - 1,2)"
+   },
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,1 mg/dL (VR: 0,6 - 1,2)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-B",
+  "test_code": "GLU",
+  "test_name_raw": "Glicemia de jejum",
+  "previous_date": "2026-01-05",
+  "exam_date": "2026-02-20",
+  "days_between": 46,
+  "previous_value": 92.0,
+  "value": 95.0,
+  "previous_unit": "mg/dL",
+  "unit": "mg/dL",
+  "delta_abs": 3.0,
+  "delta_pct": 3.26,
+  "direction": "STABLE",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260105",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 243,
+    "source_text": "Glicemia de jejum: 92 mg/dL (VR: 70 - 99)"
+   },
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 243,
+    "source_text": "Glicemia de jejum: 95 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-D",
+  "test_code": "GLU",
+  "test_name_raw": "Glicemia de jejum",
+  "previous_date": "2026-01-15",
+  "exam_date": "2026-03-01",
+  "days_between": 45,
+  "previous_value": 5.8,
+  "value": 110.0,
+  "previous_unit": "mmol/L",
+  "unit": "mg/dL",
+  "delta_abs": null,
+  "delta_pct": null,
+  "direction": "UNIT_CHANGED",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 216,
+    "char_end": 261,
+    "source_text": "Glicemia de jejum: 5,8 mmol/L (VR: 3,9 - 5,5)"
+   },
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 165,
+    "source_text": "Glicemia de jejum: 110 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "case_id": "CASE-D",
+  "test_code": "K",
+  "test_name_raw": "Potássio",
+  "previous_date": "2026-01-15",
+  "exam_date": "2026-03-01",
+  "days_between": 45,
+  "previous_value": 4.5,
+  "value": 4.6,
+  "previous_unit": null,
+  "unit": "mEq/L",
+  "delta_abs": null,
+  "delta_pct": null,
+  "direction": "UNIT_CHANGED",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 10,
+    "char_start": 300,
+    "char_end": 329,
+    "source_text": "Potássio: 4,5 (VR: 3,5 - 5,1)"
+   },
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 259,
+    "char_end": 294,
+    "source_text": "Potássio: 4,6 mEq/L (VR: 3,5 - 5,1)"
+   }
+  ]
+ }
+]

@@ -1,0 +1,442 @@
+[
+ {
+  "finding_id": "15521e3b9d3779c7c5d002983f6c5acc86aa9ff90b5c59c622aae070e2e3ec0b",
+  "review_id": "rev-b-0001",
+  "case_id": "CASE-B",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UP",
+  "test_code": "CREA",
+  "exam_date": "2026-04-02",
+  "summary": "Creatinina variou 36.36% entre 20/02/2026 (1.1 mg/dL) e 02/04/2026 (1.5 mg/dL).",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,1 mg/dL (VR: 0,6 - 1,2)"
+   },
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,5 mg/dL (VR: 0,6 - 1,2)"
+   }
+  ]
+ },
+ {
+  "finding_id": "603a3fc8615db7fb0b2641da498a4e17358144d19fc2912686fb2a76ded66456",
+  "review_id": "rev-b-0001",
+  "case_id": "CASE-B",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "CREA",
+  "exam_date": "2026-04-02",
+  "summary": "Creatinina = 1,5 mg/dL fora da faixa de referência informada no documento (0.6–1.2).",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 201,
+    "source_text": "Creatinina: 1,5 mg/dL (VR: 0,6 - 1,2)"
+   }
+  ]
+ },
+ {
+  "finding_id": "b12d6f667daa01379cfabb7aa811c28aa291f12b403dbc78f5eb1b93a69c5e96",
+  "review_id": "rev-b-0001",
+  "case_id": "CASE-B",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UP",
+  "test_code": "GLU",
+  "exam_date": "2026-04-02",
+  "summary": "Glicemia de jejum variou 24.21% entre 20/02/2026 (95.0 mg/dL) e 02/04/2026 (118.0 mg/dL).",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260220",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 243,
+    "source_text": "Glicemia de jejum: 95 mg/dL (VR: 70 - 99)"
+   },
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 244,
+    "source_text": "Glicemia de jejum: 118 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "finding_id": "3b45536e6805db7594f2a99a864544a91c4770c12dbf44b9455f66529a107c9b",
+  "review_id": "rev-b-0001",
+  "case_id": "CASE-B",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-04-02",
+  "summary": "Glicemia de jejum = 118 mg/dL fora da faixa de referência informada no documento (70.0–99.0).",
+  "evidence": [
+   {
+    "document_id": "B_lab_20260402",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 202,
+    "char_end": 244,
+    "source_text": "Glicemia de jejum: 118 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "finding_id": "53cf1439bc81f7f6f194d3fe685202ee135c48ecf7e0a05931e718b12db4fb24",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_REFERENCE_RANGE",
+  "test_code": "HBA1C",
+  "exam_date": null,
+  "summary": "Documento não informa faixa de referência para Hemoglobina glicada.",
+  "evidence": [
+   {
+    "document_id": "C_resumo_alta",
+    "page_num": 1,
+    "line_no": 4,
+    "char_start": 95,
+    "char_end": 121,
+    "source_text": "Hemoglobina glicada: 6,4 %"
+   }
+  ]
+ },
+ {
+  "finding_id": "87a204be8351dc45aab7786a4729c73375042ef300815401673372e3ff4c98fb",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_DATE",
+  "test_code": "HBA1C",
+  "exam_date": null,
+  "summary": "Resultado de Hemoglobina glicada sem data de coleta identificável.",
+  "evidence": [
+   {
+    "document_id": "C_resumo_alta",
+    "page_num": 1,
+    "line_no": 4,
+    "char_start": 95,
+    "char_end": 121,
+    "source_text": "Hemoglobina glicada: 6,4 %"
+   }
+  ]
+ },
+ {
+  "finding_id": "aa84aedc6788f5281b7233ac0fdae777c43afa51cde9c296bfbeb5cde972537a",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "BELOW_DOCUMENT_RANGE",
+  "test_code": "HGB",
+  "exam_date": "2026-03-12",
+  "summary": "Hemoglobina = 10,9 g/dL fora da faixa de referência informada no documento (12.0–16.0).",
+  "evidence": [
+   {
+    "document_id": "C_laudo_laboratorio",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 163,
+    "source_text": "Hemoglobina: 10,9 g/dL (VR: 12,0 - 16,0)"
+   }
+  ]
+ },
+ {
+  "finding_id": "388b384ba1d014c9ee35d5d6d70baaa9c27d53c4e2a38626781d716473f69e26",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "CONFLICT",
+  "finding_subtype": "DIVERGENT_VALUES",
+  "test_code": "K",
+  "exam_date": "2026-03-12",
+  "summary": "Potássio em 12/03/2026 aparece com 2 versões diferentes: 4,9 mEq/L (C_resumo_alta p.1); 5,9 mEq/L (C_laudo_laboratorio p.1). O IASX não escolhe a versão correta.",
+  "evidence": [
+   {
+    "document_id": "C_resumo_alta",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 149,
+    "char_end": 184,
+    "source_text": "Potássio: 4,9 mEq/L (VR: 3,5 - 5,1)"
+   },
+   {
+    "document_id": "C_laudo_laboratorio",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 199,
+    "source_text": "Potássio: 5,9 mEq/L (VR: 3,5 - 5,1)"
+   }
+  ]
+ },
+ {
+  "finding_id": "3183602e24d011cc1d27dcdb3e1d183c874e5405f26aefef65ed7dc324f3ab3d",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "K",
+  "exam_date": "2026-03-12",
+  "summary": "Potássio = 5,9 mEq/L fora da faixa de referência informada no documento (3.5–5.1).",
+  "evidence": [
+   {
+    "document_id": "C_laudo_laboratorio",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 164,
+    "char_end": 199,
+    "source_text": "Potássio: 5,9 mEq/L (VR: 3,5 - 5,1)"
+   }
+  ]
+ },
+ {
+  "finding_id": "2cf680ada17e90e9855fb6b7cd71d9663185188ef6b6965c9adb33cd0cd9bf36",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_REFERENCE_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-03-12",
+  "summary": "Documento não informa faixa de referência para Glicemia de jejum.",
+  "evidence": [
+   {
+    "document_id": "C_resumo_alta",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 185,
+    "char_end": 213,
+    "source_text": "Glicemia de jejum: 105 mg/dL"
+   }
+  ]
+ },
+ {
+  "finding_id": "b804df20bbde6742c8619508583453cbf9d34d3b5961f745acd9ac80957fa997",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "ILLEGIBLE_VALUE",
+  "test_code": "NA",
+  "exam_date": "2026-03-12",
+  "summary": "Valor de Sódio marcado como ilegível no documento.",
+  "evidence": [
+   {
+    "document_id": "C_laudo_laboratorio",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 238,
+    "char_end": 275,
+    "source_text": "Sódio: ilegível mEq/L (VR: 135 - 145)"
+   }
+  ]
+ },
+ {
+  "finding_id": "80a09d6a992c90b536976494cf79e1475743c405e7f5f9293f9f02a6c50ffbd8",
+  "review_id": "rev-c-0001",
+  "case_id": "CASE-C",
+  "finding_type": "GAP",
+  "finding_subtype": "NON_TEXTUAL_PAGE",
+  "test_code": null,
+  "exam_date": null,
+  "summary": "Página sem texto extraível (possível imagem/digitalização; OCR fora do escopo do MVP).",
+  "evidence": [
+   {
+    "document_id": "C_laudo_laboratorio",
+    "page_num": 2,
+    "line_no": null,
+    "char_start": null,
+    "char_end": null,
+    "source_text": ""
+   }
+  ]
+ },
+ {
+  "finding_id": "fd21b60848c1305e63ee528ade54d89dc24330657f3d5bed2a316e0ca15ac88c",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-03-01",
+  "summary": "Glicemia de jejum = 110 mg/dL fora da faixa de referência informada no documento (70.0–99.0).",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 165,
+    "source_text": "Glicemia de jejum: 110 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "finding_id": "1bb6debb51a32a2f51a8e67fc033ce93ca1eb51209c1faddc02c9868e2a83417",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "AMBIGUOUS_VALUE",
+  "test_code": "CREA",
+  "exam_date": "2026-03-01",
+  "summary": "Valor de Creatinina não é um número simples no documento; o IASX não escolhe um valor.",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 6,
+    "char_start": 166,
+    "char_end": 210,
+    "source_text": "Creatinina: 1,0 ou 1,3 mg/dL (VR: 0,6 - 1,2)"
+   }
+  ]
+ },
+ {
+  "finding_id": "e1fe6b9859c181bd65b3cb39695f4a97530226bf86ba6f37d4560ab6ba1e14cb",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "AMBIGUOUS_VALUE",
+  "test_code": "CRP",
+  "exam_date": "2026-03-01",
+  "summary": "Valor de Proteína C reativa não é um número simples no documento; o IASX não escolhe um valor.",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 7,
+    "char_start": 211,
+    "char_end": 258,
+    "source_text": "Proteína C reativa: < 0,5 mg/dL (VR: 0,0 - 0,5)"
+   }
+  ]
+ },
+ {
+  "finding_id": "54797770a44838135760d30bd455969c92bbdf54bce2c92b677ff76201d246a7",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UNIT_CHANGED",
+  "test_code": "GLU",
+  "exam_date": "2026-03-01",
+  "summary": "Glicemia de jejum mudou de unidade entre 15/01/2026 (mmol/L) e 01/03/2026 (mg/dL); comparação direta não realizada.",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 216,
+    "char_end": 261,
+    "source_text": "Glicemia de jejum: 5,8 mmol/L (VR: 3,9 - 5,5)"
+   },
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 5,
+    "char_start": 123,
+    "char_end": 165,
+    "source_text": "Glicemia de jejum: 110 mg/dL (VR: 70 - 99)"
+   }
+  ]
+ },
+ {
+  "finding_id": "262f7aee2c84d9e01fe214f4d30c58b24cf5a82351b6611024118d430ea7ab03",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "OUT_OF_DOCUMENT_RANGE",
+  "finding_subtype": "ABOVE_DOCUMENT_RANGE",
+  "test_code": "GLU",
+  "exam_date": "2026-01-15",
+  "summary": "Glicemia de jejum = 5,8 mmol/L fora da faixa de referência informada no documento (3.9–5.5).",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 216,
+    "char_end": 261,
+    "source_text": "Glicemia de jejum: 5,8 mmol/L (VR: 3,9 - 5,5)"
+   }
+  ]
+ },
+ {
+  "finding_id": "d5a22c18df0a83fbd0d3852658540a035b68ea4bc9a94fcf8c962d960c4d5377",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "TEMPORAL_VARIATION",
+  "finding_subtype": "UNIT_CHANGED",
+  "test_code": "K",
+  "exam_date": "2026-03-01",
+  "summary": "Potássio mudou de unidade entre 15/01/2026 (sem unidade) e 01/03/2026 (mEq/L); comparação direta não realizada.",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 10,
+    "char_start": 300,
+    "char_end": 329,
+    "source_text": "Potássio: 4,5 (VR: 3,5 - 5,1)"
+   },
+   {
+    "document_id": "D_lab_20260301",
+    "page_num": 1,
+    "line_no": 8,
+    "char_start": 259,
+    "char_end": 294,
+    "source_text": "Potássio: 4,6 mEq/L (VR: 3,5 - 5,1)"
+   }
+  ]
+ },
+ {
+  "finding_id": "e354412a626fc862d984865ce2f18050e6e86c87f44c3fe943444efbb60261bf",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "MISSING_UNIT",
+  "test_code": "K",
+  "exam_date": "2026-01-15",
+  "summary": "Valor de Potássio sem unidade no documento.",
+  "evidence": [
+   {
+    "document_id": "D_lab_20260115",
+    "page_num": 1,
+    "line_no": 10,
+    "char_start": 300,
+    "char_end": 329,
+    "source_text": "Potássio: 4,5 (VR: 3,5 - 5,1)"
+   }
+  ]
+ },
+ {
+  "finding_id": "66cb1c479c46d27591de064c817ff123410aa3f7aedd6d7428c84fe6d33c6442",
+  "review_id": "rev-d-0001",
+  "case_id": "CASE-D",
+  "finding_type": "GAP",
+  "finding_subtype": "NOT_SYNTHETIC_DOCUMENT",
+  "test_code": null,
+  "exam_date": null,
+  "summary": "Documento sem declaração de dado sintético: conteúdo não processado (o MVP aceita somente dados sintéticos).",
+  "evidence": [
+   {
+    "document_id": "D_sem_marcacao",
+    "page_num": 1,
+    "line_no": null,
+    "char_start": null,
+    "char_end": null,
+    "source_text": ""
+   }
+  ]
+ }
+]

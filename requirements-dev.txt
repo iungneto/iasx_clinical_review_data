@@ -1,2 +1,8 @@
 pypdf==5.4.0
 pytest
+pydantic>=2.10,<3
+fastapi
+httpx
+python-multipart
+uvicorn
+databricks-sdk>=0.40

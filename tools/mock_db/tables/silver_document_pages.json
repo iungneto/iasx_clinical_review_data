@@ -1,0 +1,122 @@
+[
+ {
+  "case_id": "CASE-A",
+  "document_id": "A_lab_20260310",
+  "input_hash": "eddacf416c43921cc08db891dca29b0068293c9c9b9890688681b1838c84bb7f",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 10/03/2026\nHemoglobina: 13,8 g/dL (VR: 12,0 - 16,0)\nCreatinina: 0,9 mg/dL (VR: 0,6 - 1,2)\nGlicemia de jejum: 88 mg/dL (VR: 70 - 99)\nPotássio: 4,2 mEq/L (VR: 3,5 - 5,1)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-B",
+  "document_id": "B_lab_20260105",
+  "input_hash": "ca5a27db37ec28a99b1c5364fa5016224b302d56e7ffff1edd3fd7dc15e094c0",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 05/01/2026\nHemoglobina: 13,5 g/dL (VR: 12,0 - 16,0)\nCreatinina: 1,0 mg/dL (VR: 0,6 - 1,2)\nGlicemia de jejum: 92 mg/dL (VR: 70 - 99)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-B",
+  "document_id": "B_lab_20260220",
+  "input_hash": "7bfce839e490d702ff3837e6a9677b48eef1b84baccb0cf0942ae3fd9b01b7eb",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 20/02/2026\nHemoglobina: 13,2 g/dL (VR: 12,0 - 16,0)\nCreatinina: 1,1 mg/dL (VR: 0,6 - 1,2)\nGlicemia de jejum: 95 mg/dL (VR: 70 - 99)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-B",
+  "document_id": "B_lab_20260402",
+  "input_hash": "7764689f19ac71c1e7082abd767fd3efd795b9ed0f7f900e8f40f2158cd21dec",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 02/04/2026\nHemoglobina: 13,4 g/dL (VR: 12,0 - 16,0)\nCreatinina: 1,5 mg/dL (VR: 0,6 - 1,2)\nGlicemia de jejum: 118 mg/dL (VR: 70 - 99)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-C",
+  "document_id": "C_laudo_laboratorio",
+  "input_hash": "e35fc797357badacca0241ae19fe5e3a357b9a25a26893bcfa45e830db60c13d",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 2,
+  "page_text": "",
+  "is_textual": false,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-C",
+  "document_id": "C_laudo_laboratorio",
+  "input_hash": "e35fc797357badacca0241ae19fe5e3a357b9a25a26893bcfa45e830db60c13d",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 12/03/2026\nHemoglobina: 10,9 g/dL (VR: 12,0 - 16,0)\nPotássio: 5,9 mEq/L (VR: 3,5 - 5,1)\nCreatinina: 1,1 mg/dL (VR: 0,6 - 1,2)\nSódio: ilegível mEq/L (VR: 135 - 145)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-C",
+  "document_id": "C_resumo_alta",
+  "input_hash": "cfb970840cab426fe898382493f7b45d9b09b49c8d5a59e5cfe1e5c6272c4449",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "RESUMO DE ALTA (SINTÉTICO)\nPaciente: ******** ********* *\nExame externo trazido pelo paciente:\nHemoglobina glicada: 6,4 %\nData da coleta: 12/03/2026\nPotássio: 4,9 mEq/L (VR: 3,5 - 5,1)\nGlicemia de jejum: 105 mg/dL\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-D",
+  "document_id": "D_lab_20260115",
+  "input_hash": "4da94b41bd8c49e22af68651baeb9a39bbe817b0ea18ff0a1f1eec407583be2f",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData de nascimento: **********\nTelefone: **** **********\nMédico solicitante: *** ********* *\nData da coleta: 15/01/2026\nGlicemia de jejum: 5,8 mmol/L (VR: 3,9 - 5,5)\nCreatinina: 0,9 mg/dL (VR: 0,6 - 1,2)\nPotássio: 4,5 (VR: 3,5 - 5,1)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-D",
+  "document_id": "D_lab_20260301",
+  "input_hash": "d7141d14524dd9daffd52374b85914f2a53d00643067b2df88af65a8e4d818a3",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": true,
+  "page_num": 1,
+  "page_text": "LABORATÓRIO SINTÉTICO IASX — LAUDO DE EXAMES\nPaciente: ******** ********* *\nCPF: ***.***.***-**\nData da coleta: 01/03/2026\nGlicemia de jejum: 110 mg/dL (VR: 70 - 99)\nCreatinina: 1,0 ou 1,3 mg/dL (VR: 0,6 - 1,2)\nProteína C reativa: < 0,5 mg/dL (VR: 0,0 - 0,5)\nPotássio: 4,6 mEq/L (VR: 3,5 - 5,1)\nDocumento sintético para demonstração — não contém dados reais.\n",
+  "is_textual": true,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ },
+ {
+  "case_id": "CASE-D",
+  "document_id": "D_sem_marcacao",
+  "input_hash": "5b0d70f2d618873f8c353edac6ac3e2e41605a297726557a11c8008814c8d368",
+  "ingested_at": "2026-10-01T21:00:09.393Z",
+  "parse_error": null,
+  "synthetic_declared": false,
+  "page_num": 1,
+  "page_text": null,
+  "is_textual": false,
+  "extracted_at": "2026-10-01T21:00:27.144Z"
+ }
+]

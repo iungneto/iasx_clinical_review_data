@@ -6,7 +6,7 @@ CREATE OR REFRESH MATERIALIZED VIEW gold_findings (
   CONSTRAINT known_finding_type EXPECT (finding_type IN ('OUT_OF_DOCUMENT_RANGE', 'TEMPORAL_VARIATION', 'CONFLICT', 'GAP')) ON VIOLATION FAIL UPDATE,
   CONSTRAINT registered_case EXPECT (review_id IS NOT NULL)
 )
-COMMENT 'Achados (alteração vs. faixa do documento, variação temporal, conflito, lacuna) com fonte obrigatória. Não contém diagnóstico.'
+COMMENT 'Achados (alteração vs. faixa do documento, variação temporal, conflito, lacuna) com fonte obrigatória. Apoio à revisão: não contém diagnóstico, causalidade nem recomendação.'
 CLUSTER BY (case_id)
 TBLPROPERTIES ('iasx.layer' = 'gold')
 AS WITH out_of_range AS (
@@ -30,10 +30,11 @@ variation AS (
     case_id, test_code, exam_date,
     CASE WHEN direction = 'UNIT_CHANGED'
          THEN format_string('%s mudou de unidade entre %s (%s) e %s (%s); comparação direta não realizada.',
-                            test_name_raw, previous_date, previous_unit, exam_date, unit)
+                            test_name_raw, date_format(previous_date, 'dd/MM/yyyy'), coalesce(previous_unit, 'sem unidade'),
+                            date_format(exam_date, 'dd/MM/yyyy'), coalesce(unit, 'sem unidade'))
          ELSE format_string('%s variou %s%% entre %s (%s %s) e %s (%s %s).',
-                            test_name_raw, delta_pct, previous_date, previous_value, coalesce(previous_unit, ''),
-                            exam_date, value, coalesce(unit, ''))
+                            test_name_raw, delta_pct, date_format(previous_date, 'dd/MM/yyyy'), previous_value,
+                            coalesce(previous_unit, ''), date_format(exam_date, 'dd/MM/yyyy'), value, coalesce(unit, ''))
     END AS summary,
     evidence
   FROM gold_temporal_comparison
@@ -46,7 +47,7 @@ conflicts AS (
     'DIVERGENT_VALUES' AS finding_subtype,
     case_id, test_code, exam_date,
     format_string('%s em %s aparece com %d versões diferentes: %s. O IASX não escolhe a versão correta.',
-                  test_name_raw, exam_date, n_versions,
+                  test_name_raw, date_format(exam_date, 'dd/MM/yyyy'), n_versions,
                   array_join(transform(versions, v -> concat(v.value_raw, ' ', coalesce(v.unit, ''),
                                                              ' (', v.document_id, ' p.', v.page_num, ')')), '; ')) AS summary,
     evidence

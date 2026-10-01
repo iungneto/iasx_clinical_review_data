@@ -63,7 +63,8 @@ def review_queue(case_id: str) -> list[dict]:
     return query(
         """SELECT finding_id, finding_type, finding_subtype, test_code, exam_date, summary,
                   jev_status, jev_needs_review, jev_priority, jev_is_clear,
-                  needs_review_final, priority_final, safety_flags, finding_state,
+                  jev_model, jev_prompt_version,
+                  needs_review_final, review_reasons, priority_final, priority_reason, safety_flags, finding_state,
                   reviewer_action, corrected_value, corrected_unit
            FROM {s}.gold_review_queue
            WHERE case_id = :case_id
