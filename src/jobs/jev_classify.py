@@ -18,7 +18,7 @@
 # MAGIC resposta bruta, para reconstruir qual versão gerou qual saída.
 # MAGIC
 # MAGIC A chave fica no secret scope (`databricks secrets put-secret iasx jev_api_key`), nunca no código.
-# MAGIC **Confirme o formato de request/response em https://api.typesafe.ai/docs** — está isolado em
+# MAGIC O formato de request/response segue https://api.typesafe.ai/docs (OpenAPI 0.2.0) e está isolado em
 # MAGIC `build_request` e `extract_answer` de `jev_contract.py`.
 
 # COMMAND ----------

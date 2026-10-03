@@ -264,9 +264,10 @@ A `bronze_documents` (PDF bruto) fica de fora.
 
 ## Pendências a validar antes da demo
 
-- **Contrato da API do Jev:** `build_request`/`extract_answer` em `src/jobs/jev_contract.py` seguem o que o
-  documento descreve (`POST /v1/systemone`, `GET /v1/models`, Bearer, Noul/Choice). Confira os campos exatos em
-  https://api.typesafe.ai/docs. Qualquer resposta fora do esperado vira `jev_response_valid = false`, e isso força revisão humana.
+- **Contrato da API do Jev:** `build_request`/`extract_answer` em `src/jobs/jev_contract.py` seguem o OpenAPI
+  publicado em https://api.typesafe.ai/docs (`POST /v1/systemone` com `state` + `questions`, Bearer). Falta validar
+  com uma chave real (`iasx/jev_api_key`). Noul devolve probabilidade: entre 0,35 e 0,65 conta como incerta. Qualquer
+  resposta incerta ou fora do esperado vira `jev_response_valid = false`, e isso força revisão humana.
 - **Layout da conta Solana:** alinhar `docs/onchain_account_layout.md` com o programa Anchor e preencher
   `solana_program_id` em `databricks.yml`.
 - **Baseline manual:** preencher `manual_review_seconds_baseline` em `cases.json` com tempos medidos.
