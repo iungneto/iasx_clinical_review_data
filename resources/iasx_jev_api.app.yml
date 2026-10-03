@@ -4,7 +4,7 @@ resources:
     # service principal que tenha CAN_USE neste app; o token do Databricks nunca vai para o navegador.
     # As tabelas gold/silver abaixo são criadas pela pipeline: rode iasx_review_cycle antes do primeiro deploy do app.
     iasx_jev_api:
-      name: iasx-jev-api
+      name: ${var.app_name}
       description: API do IASX para o frontend JEV — lê a gold pelo SQL Warehouse e grava eventos na landing.
       source_code_path: ../src/app
       permissions:

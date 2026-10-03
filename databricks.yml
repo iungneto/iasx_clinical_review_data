@@ -18,6 +18,9 @@ variables:
   secret_scope:
     description: Secret scope com a chave da API do Jev (nunca no repositório).
     default: iasx
+  app_name:
+    description: Nome do Databricks App da API do JEV (o modo development não prefixa apps, então cada target usa o seu).
+    default: iasx-jev-api
   warehouse_id:
     description: SQL Warehouse usado pela API do JEV (leitura da gold).
     lookup:
@@ -43,3 +46,17 @@ targets:
     workspace:
       # URL do workspace Free Edition, ex.: https://dbc-xxxxxxxx-xxxx.cloud.databricks.com
       host: https://dbc-c45b5519-fb4f.cloud.databricks.com
+
+  # Produção: deploy só a partir da branch main, com schema sem prefixo (workspace.iasx_clinical) e app próprio.
+  #   git checkout main && databricks bundle deploy -t prd --profile <perfil>
+  prd:
+    mode: production
+    git:
+      branch: main
+    workspace:
+      host: https://dbc-c45b5519-fb4f.cloud.databricks.com
+      root_path: /Workspace/Users/iungneto@gmail.com/.bundle/${bundle.name}/${bundle.target}
+    run_as:
+      user_name: iungneto@gmail.com
+    variables:
+      app_name: iasx-jev-api-prd

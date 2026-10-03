@@ -118,6 +118,17 @@ databricks bundle run iasx_bootstrap                  # pastas da landing + caso
 databricks bundle run iasx_review_cycle               # pipeline → Jev → verificação → pipeline
 ```
 
+**Produção (target `prd`).** Deploy só a partir da `main` (o CLI recusa outra branch). Usa o schema
+`workspace.iasx_clinical`, recursos sem prefixo e o app `iasx-jev-api-prd`, sem tocar no `dev`:
+
+```bash
+git checkout main && git pull
+databricks bundle deploy -t prd --profile <perfil>
+uv run python tools/setup_access_groups.py --profile <perfil> --app iasx-jev-api-prd
+databricks bundle run iasx_bootstrap -t prd --profile <perfil>
+databricks bundle run iasx_review_cycle -t prd --profile <perfil>
+```
+
 **Git folder no workspace.** O repositório também está em `/Workspace/Users/<usuário>/iasx_clinical_review_data`
 (Git folder ligada ao GitHub, branch `develop`). Para criar em outro workspace:
 
