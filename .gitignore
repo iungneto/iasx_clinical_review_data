@@ -4,3 +4,5 @@ __pycache__/
 .venv/
 *.pyc
 # data/synthetic NÃO é ignorado: o bundle precisa sincronizá-lo para o job de bootstrap.
+# Rascunhos de sessão SQL da extensão Databricks do VS Code
+*.session.sql
