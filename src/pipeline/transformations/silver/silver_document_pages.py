@@ -10,6 +10,8 @@ from utilities.pdf_parsing import extract_pages
 # Os workers serverless não enxergam o root_path da pipeline: o pacote vai serializado junto com a UDF.
 cloudpickle.register_pickle_by_value(utilities)
 
+POLICY = spark.conf.get("iasx.policy_schema")  # funções de column mask (src/sql/access_policies.sql)
+
 _PAGES_SCHEMA = T.StructType(
     [
         T.StructField(
@@ -45,6 +47,12 @@ def _extract_pages_masked(content):
     "Documento sem declaração de dado sintético fica sem texto (synthetic_declared = false) e vira lacuna.",
     table_properties={"iasx.layer": "silver"},
     cluster_by=["case_id", "document_id"],
+    # Column mask: texto do documento só para iasx_clinical_text_readers.
+    schema=(
+        "case_id STRING, document_id STRING, input_hash STRING, ingested_at TIMESTAMP, parse_error STRING, "
+        f"synthetic_declared BOOLEAN, page_num INT, page_text STRING MASK {POLICY}.iasx_mask_document_text, "
+        "is_textual BOOLEAN, extracted_at TIMESTAMP"
+    ),
 )
 @dp.expect_or_drop("valid_document", "case_id <> '' AND document_id <> ''")
 def silver_document_pages():

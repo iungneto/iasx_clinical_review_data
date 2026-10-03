@@ -1,7 +1,8 @@
 resources:
   jobs:
     # Tarefas de notebook rodam em compute serverless (padrão da Free Edition quando nenhum cluster é informado).
-    # Prepara as pastas do volume e (opcionalmente) carrega os casos sintéticos A/B/C.
+    # Prepara as pastas do volume, carrega os casos sintéticos A–D e aplica as políticas de mascaramento
+    # (column masks) que as tabelas da pipeline referenciam. Rode antes do primeiro iasx_review_cycle.
     iasx_bootstrap:
       name: iasx_bootstrap
       tasks:
@@ -10,6 +11,12 @@ resources:
             notebook_path: ../src/jobs/00_bootstrap_landing.py
             base_parameters:
               landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
+
+        - task_key: apply_access_policies
+          notebook_task:
+            notebook_path: ../src/jobs/apply_access_policies.py
+            base_parameters:
+              fq_schema: ${var.catalog}.${resources.schemas.iasx_schema.name}
 
     # Ciclo completo da revisão:
     #   pipeline (extração/achados) → Jev (decisões estruturadas) → verificação on-chain → pipeline (estado final)

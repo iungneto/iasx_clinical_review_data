@@ -2,6 +2,15 @@
 -- finding_id é determinístico (tipo + chave + fontes): o mesmo PDF gera sempre os mesmos IDs,
 -- o que torna o hash da análise reprodutível para a atestação on-chain.
 CREATE OR REFRESH MATERIALIZED VIEW gold_findings (
+  finding_id STRING,
+  review_id STRING,
+  case_id STRING,
+  finding_type STRING,
+  finding_subtype STRING,
+  test_code STRING,
+  exam_date DATE,
+  summary STRING,
+  evidence ARRAY<STRUCT<document_id: STRING, page_num: INT, line_no: INT, char_start: INT, char_end: INT, source_text: STRING>> MASK ${iasx.policy_schema}.iasx_mask_evidence,
   CONSTRAINT every_finding_has_source EXPECT (size(evidence) > 0 AND evidence[0].document_id IS NOT NULL) ON VIOLATION FAIL UPDATE,
   CONSTRAINT known_finding_type EXPECT (finding_type IN ('OUT_OF_DOCUMENT_RANGE', 'TEMPORAL_VARIATION', 'CONFLICT', 'GAP')) ON VIOLATION FAIL UPDATE,
   CONSTRAINT registered_case EXPECT (review_id IS NOT NULL)

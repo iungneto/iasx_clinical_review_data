@@ -1,6 +1,14 @@
 -- Conflitos: mesmo caso, mesmo exame, mesma data, valores/unidades diferentes em documentos/páginas distintos.
 -- O IASX NÃO decide qual versão é a correta: todas as versões e fontes são apresentadas ao profissional.
-CREATE OR REFRESH MATERIALIZED VIEW gold_conflicts
+CREATE OR REFRESH MATERIALIZED VIEW gold_conflicts (
+  case_id STRING,
+  test_code STRING,
+  exam_date DATE,
+  test_name_raw STRING,
+  n_versions BIGINT,
+  versions ARRAY<STRUCT<value_raw: STRING, unit: STRING, document_id: STRING, page_num: INT>>,
+  evidence ARRAY<STRUCT<document_id: STRING, page_num: INT, line_no: INT, char_start: INT, char_end: INT, source_text: STRING>> MASK ${iasx.policy_schema}.iasx_mask_evidence
+)
 COMMENT 'Informações potencialmente conflitantes, com todas as versões e suas fontes.'
 CLUSTER BY (case_id)
 TBLPROPERTIES ('iasx.layer' = 'gold')

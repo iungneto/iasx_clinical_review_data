@@ -1,5 +1,14 @@
 -- Lacunas: ausência ou ilegibilidade. Nada é preenchido; cada lacuna aponta para onde foi detectada.
-CREATE OR REFRESH MATERIALIZED VIEW gold_gaps
+CREATE OR REFRESH MATERIALIZED VIEW gold_gaps (
+  case_id STRING,
+  gap_type STRING,
+  test_code STRING,
+  exam_date DATE,
+  document_id STRING,
+  page_num INT,
+  description STRING,
+  evidence ARRAY<STRUCT<document_id: STRING, page_num: INT, line_no: INT, char_start: INT, char_end: INT, source_text: STRING>> MASK ${iasx.policy_schema}.iasx_mask_evidence
+)
 COMMENT 'Lacunas de informação (data, valor ilegível/ausente/ambíguo, unidade, faixa de referência, página sem texto, documento ilegível ou não sintético).'
 CLUSTER BY (case_id)
 TBLPROPERTIES ('iasx.layer' = 'gold')

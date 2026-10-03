@@ -51,6 +51,11 @@ def main():
     lines = (ROOT / "data/synthetic/cases.json").read_text(encoding="utf-8").splitlines()
     in_cases = ", ".join(f"'{json.loads(line)['case_id']}'" for line in lines if line.strip())
 
+    # Column masks (src/sql/access_policies.sql): fora do grupo, o texto viria como [restrito] e a base ficaria inútil.
+    [allowed] = run(w, warehouse_id, "SELECT to_json(named_struct('ok', is_member('iasx_clinical_text_readers')))")
+    if not allowed["ok"]:
+        raise SystemExit("o usuário do perfil precisa estar em iasx_clinical_text_readers (tools/setup_access_groups.py)")
+
     OUT.mkdir(exist_ok=True)
     for table in TABLES:
         rows = run(w, warehouse_id, (

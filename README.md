@@ -112,8 +112,9 @@ Sem chave ainda? Rode o job com `jev_mode=mock` para ensaiar a demo (resultado m
 
 ```bash
 databricks bundle validate
-databricks bundle deploy                              # cria schema, volume, pipeline e jobs
-databricks bundle run iasx_bootstrap                  # pastas da landing + casos A–D
+databricks bundle deploy                              # cria schema, volume, pipeline, jobs e app
+uv run python tools/setup_access_groups.py --profile <perfil>   # grupos das column masks (aguarde ~5 min)
+databricks bundle run iasx_bootstrap                  # pastas da landing + casos A–D + funções de máscara
 databricks bundle run iasx_review_cycle               # pipeline → Jev → verificação → pipeline
 ```
 
@@ -195,6 +196,16 @@ A `bronze_documents` (PDF bruto) fica de fora.
 - **Acesso mínimo.** A API exige OAuth do Databricks (HTTPS do Databricks Apps) e só o service principal do JEV
   tem `CAN_USE`; o app lê somente as tabelas que expõe (sem a bronze com o PDF bruto) e escreve só na landing.
 - **Dados.** Somente sintéticos, com travas na entrada; identificadores mascarados antes da silver.
+- **Column masks (Unity Catalog).** O conteúdo do documento só aparece para quem está no grupo, mesmo com
+  `SELECT` na tabela (inclusive admins e o dono). As funções ficam em `src/sql/access_policies.sql`:
+
+  | Grupo | Vê | Membros | Para os demais |
+  |---|---|---|---|
+  | `iasx_raw_document_readers` | `bronze_documents.content` (PDF bruto) | quem roda a pipeline | `NULL` |
+  | `iasx_clinical_text_readers` | `page_text`, `source_text`, `date_source_text` e o trecho de `evidence` | quem roda a pipeline e o service principal do app | `[restrito]`; documento, página e offsets seguem visíveis |
+
+  Valores estruturados (exame, valor, unidade, resumo do achado) ficam sob os grants. Os grupos deste workspace
+  são locais (`is_member`); a inclusão leva alguns minutos para valer.
 - **Logs** dos jobs registram só contagens e caminhos, nunca conteúdo de laudo.
 - **Blockchain** só na Devnet e só com hashes, versões e status.
 - **Ambiente** de desenvolvimento isolado (`mode: development`, schema com prefixo do usuário).

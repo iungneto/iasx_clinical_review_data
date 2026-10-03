@@ -18,6 +18,8 @@ resources:
       configuration:
         iasx.landing_root: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
         iasx.workflow_version: ${var.workflow_version}
+        # Schema das funções de column mask (src/sql/access_policies.sql), referenciadas nas definições das tabelas.
+        iasx.policy_schema: ${var.catalog}.${resources.schemas.iasx_schema.name}
         # Limiar de apresentação de variação temporal (não é critério clínico).
         iasx.temporal_variation_pct: "20"
       tags:

@@ -34,12 +34,22 @@ _RESULT_SCHEMA = T.ArrayType(
 
 _parse_page_udf = F.udf(parse_page, _RESULT_SCHEMA)
 
+POLICY = spark.conf.get("iasx.policy_schema")  # funções de column mask (src/sql/access_policies.sql)
+
 
 @dp.table(
     name="silver_lab_results",
     comment="Resultados de exame extraídos com fonte (documento, página, linha, offsets e trecho). Ausências não são preenchidas.",
     table_properties={"iasx.layer": "silver"},
     cluster_by=["case_id", "test_code"],
+    # Column mask: trechos do documento só para iasx_clinical_text_readers.
+    schema=(
+        "case_id STRING, document_id STRING, page_num INT, ingested_at TIMESTAMP, line_no INT, char_start INT, "
+        f"char_end INT, source_text STRING MASK {POLICY}.iasx_mask_document_text, exam_date DATE, "
+        f"date_source_text STRING MASK {POLICY}.iasx_mask_document_text, test_name_raw STRING, test_code STRING, "
+        "test_known BOOLEAN, value_raw STRING, value DOUBLE, value_status STRING, unit STRING, ref_low DOUBLE, "
+        "ref_high DOUBLE, extractor_version STRING, measurement_id STRING, processed_at TIMESTAMP"
+    ),
 )
 @dp.expect_all_or_drop(
     {

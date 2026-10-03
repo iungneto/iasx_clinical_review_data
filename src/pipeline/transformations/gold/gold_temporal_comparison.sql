@@ -1,6 +1,21 @@
 -- Comparação temporal do mesmo exame entre datas consecutivas.
 -- Datas com valores conflitantes ficam fora da série (são tratadas em gold_conflicts, sem escolher versão).
-CREATE OR REFRESH MATERIALIZED VIEW gold_temporal_comparison
+CREATE OR REFRESH MATERIALIZED VIEW gold_temporal_comparison (
+  case_id STRING,
+  test_code STRING,
+  test_name_raw STRING,
+  previous_date DATE,
+  exam_date DATE,
+  days_between INT,
+  previous_value DOUBLE,
+  value DOUBLE,
+  previous_unit STRING,
+  unit STRING,
+  delta_abs DOUBLE,
+  delta_pct DOUBLE,
+  direction STRING,
+  evidence ARRAY<STRUCT<document_id: STRING, page_num: INT, line_no: INT, char_start: INT, char_end: INT, source_text: STRING>> MASK ${iasx.policy_schema}.iasx_mask_evidence
+)
 COMMENT 'Variação entre coletas consecutivas do mesmo exame, com evidência das duas medições.'
 CLUSTER BY (case_id)
 TBLPROPERTIES ('iasx.layer' = 'gold')
