@@ -37,7 +37,8 @@ print("Pastas prontas:", ", ".join(FOLDERS))
 # COMMAND ----------
 
 if load_synthetic:
-    # O notebook roda a partir de <bundle>/files/src/jobs; os dados ficam em <bundle>/files/data/synthetic.
+    # O notebook roda em <raiz>/src/jobs e os dados ficam em <raiz>/data/synthetic, onde <raiz> é a cópia do
+    # bundle (.bundle/.../files) ou a Git folder, quando o notebook é aberto direto nela.
     synthetic_dir = os.path.abspath(os.path.join(os.getcwd(), "..", "..", "data", "synthetic"))
     if not os.path.isdir(synthetic_dir):
         raise FileNotFoundError(

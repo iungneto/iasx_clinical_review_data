@@ -118,6 +118,21 @@ databricks bundle run iasx_bootstrap                  # pastas da landing + caso
 databricks bundle run iasx_review_cycle               # pipeline → Jev → verificação → pipeline
 ```
 
+**Git folder no workspace.** O repositório também está em `/Workspace/Users/<usuário>/iasx_clinical_review_data`
+(Git folder ligada ao GitHub, branch `develop`). Para criar em outro workspace:
+
+```bash
+databricks repos create https://github.com/iungneto/iasx_clinical_review_data gitHub \
+  --path /Workspace/Users/<usuário>/iasx_clinical_review_data --profile <perfil>
+databricks repos update <repo_id> --branch develop --profile <perfil>
+```
+
+Pipeline e jobs rodam da cópia do bundle (`~/.bundle/iasx_clinical_review_data/dev/files`), e não da Git folder.
+O deploy pode ser feito pelo CLI ou pelo botão **Deploy** do bundle aberto na Git folder: os dois gravam o mesmo
+estado e atualizam os mesmos recursos. Com `source_linked_deployment: false` no target `dev`, pull ou troca de
+branch na Git folder não alteram a pipeline até o próximo deploy. A Git folder é pública para leitura; para dar
+push a partir do workspace, cadastre um token do GitHub em *Settings → Linked accounts*.
+
 ### 5. Simular o portal (revisão humana e atestação)
 
 1. Consulte `gold_review_queue` (query 2 de `src/sql/portal_queries.sql`) e copie os `finding_id`.
