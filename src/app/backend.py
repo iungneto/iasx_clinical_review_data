@@ -155,10 +155,10 @@ def write_pdf(case_id: str, document_id: str, content: bytes) -> str:
     return _upload(f"pdfs/{case_id}/{document_id}.pdf", content)
 
 
-def run_review_cycle() -> int:
+def run_review_cycle(mode: str = "full") -> int:
     if not REVIEW_CYCLE_JOB_ID:
         raise RuntimeError("IASX_REVIEW_CYCLE_JOB_ID não configurado")
-    return w.jobs.run_now(job_id=int(REVIEW_CYCLE_JOB_ID)).run_id
+    return w.jobs.run_now(job_id=int(REVIEW_CYCLE_JOB_ID), job_parameters={"mode": mode}).run_id
 
 
 def run_status(run_id: int) -> dict:

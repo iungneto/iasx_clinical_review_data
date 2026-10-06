@@ -20,11 +20,25 @@ resources:
 
     # Ciclo completo da revisão:
     #   pipeline (extração/achados) → Jev (decisões estruturadas) → verificação on-chain → pipeline (estado final)
+    # mode=decisions_only (signoff do profissional): só chegaram decisões, então pula a extração e o Jev
+    # e vai direto à verificação on-chain e ao estado final (economiza uma subida da pipeline).
     iasx_review_cycle:
       name: iasx_review_cycle
       max_concurrent_runs: 1
+      parameters:
+        - name: mode
+          default: full
       tasks:
+        - task_key: needs_extraction
+          condition_task:
+            op: NOT_EQUAL
+            left: "{{job.parameters.mode}}"
+            right: decisions_only
+
         - task_key: extract_and_find
+          depends_on:
+            - task_key: needs_extraction
+              outcome: "true"
           pipeline_task:
             pipeline_id: ${resources.pipelines.iasx_clinical_pipeline.id}
 
@@ -42,8 +56,13 @@ resources:
               jev_mode: mock
 
         - task_key: verify_onchain
+          # Um dos dois caminhos: Jev concluído (full) ou condição falsa (decisions_only, extração e Jev excluídos).
+          # Se o Jev falhar no modo full, nenhum dos dois tem sucesso e o ciclo para aqui.
           depends_on:
+            - task_key: needs_extraction
+              outcome: "false"
             - task_key: jev_classify
+          run_if: AT_LEAST_ONE_SUCCESS
           notebook_task:
             notebook_path: ../src/jobs/verify_onchain.py
             base_parameters:
@@ -57,4 +76,19 @@ resources:
             - task_key: verify_onchain
           pipeline_task:
             pipeline_id: ${resources.pipelines.iasx_clinical_pipeline.id}
+            # Só o que muda depois do Jev, das decisões e da verificação on-chain; documentos, resultados
+            # e achados já foram atualizados no extract_and_find.
+            refresh_selection:
+              - bronze_jev_decisions
+              - silver_jev_decisions
+              - bronze_review_decisions
+              - silver_review_decisions
+              - bronze_attestations
+              - silver_attestations
+              - bronze_attestation_verifications
+              - silver_attestation_verifications
+              - gold_review_queue
+              - gold_attestation_payload
+              - gold_review_status
+              - gold_mvp_metrics
 

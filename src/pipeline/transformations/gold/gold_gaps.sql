@@ -24,7 +24,7 @@ AS WITH measurement_gaps AS (
       CASE WHEN value_status = 'MISSING' THEN 'MISSING_VALUE' END,
       CASE WHEN value_status = 'AMBIGUOUS' THEN 'AMBIGUOUS_VALUE' END,
       CASE WHEN value_status = 'OK' AND unit IS NULL THEN 'MISSING_UNIT' END,
-      CASE WHEN value_status = 'OK' AND (ref_low IS NULL OR ref_high IS NULL) THEN 'MISSING_REFERENCE_RANGE' END,
+      CASE WHEN value_status = 'OK' AND ref_kind IS NULL AND (ref_low IS NULL OR ref_high IS NULL) THEN 'MISSING_REFERENCE_RANGE' END,
       CASE WHEN NOT test_known THEN 'UNMAPPED_TEST' END
     ), x -> x IS NOT NULL) AS gap_types
   FROM silver_lab_results

@@ -21,16 +21,30 @@ TBLPROPERTIES ('iasx.layer' = 'gold')
 AS WITH out_of_range AS (
   SELECT
     'OUT_OF_DOCUMENT_RANGE' AS finding_type,
-    CASE WHEN value < ref_low THEN 'BELOW_DOCUMENT_RANGE' ELSE 'ABOVE_DOCUMENT_RANGE' END AS finding_subtype,
+    CASE WHEN value < ref_low OR (ref_kind = 'GT' AND value = ref_low) THEN 'BELOW_DOCUMENT_RANGE'
+         ELSE 'ABOVE_DOCUMENT_RANGE' END AS finding_subtype,
     case_id, test_code, exam_date,
-    format_string('%s = %s %s fora da faixa de referência informada no documento (%s–%s).',
-                  test_name_raw, value_raw, coalesce(unit, ''), ref_low, ref_high) AS summary,
+    format_string('%s = %s %s fora da faixa de referência informada no documento (%s).',
+                  test_name_raw, value_raw, coalesce(unit, ''),
+                  CASE ref_kind
+                    WHEN 'LT' THEN format_string('<%s', ref_high)
+                    WHEN 'LE' THEN format_string('≤%s', ref_high)
+                    WHEN 'GT' THEN format_string('>%s', ref_low)
+                    WHEN 'GE' THEN format_string('≥%s', ref_low)
+                    ELSE format_string('%s–%s', ref_low, ref_high)
+                  END) AS summary,
     array(named_struct(
       'document_id', document_id, 'page_num', page_num, 'line_no', line_no,
       'char_start', char_start, 'char_end', char_end, 'source_text', source_text)) AS evidence
   FROM silver_lab_results
-  WHERE value_status = 'OK' AND ref_low IS NOT NULL AND ref_high IS NOT NULL
-    AND (value < ref_low OR value > ref_high)
+  -- Faixa como o documento informa: intervalo (a–b) ou um lado só ("<190" = normal abaixo de 190).
+  WHERE value_status = 'OK' AND CASE ref_kind
+    WHEN 'LT' THEN value >= ref_high
+    WHEN 'LE' THEN value > ref_high
+    WHEN 'GT' THEN value <= ref_low
+    WHEN 'GE' THEN value < ref_low
+    ELSE ref_low IS NOT NULL AND ref_high IS NOT NULL AND (value < ref_low OR value > ref_high)
+  END
 ),
 variation AS (
   SELECT

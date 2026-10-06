@@ -14,7 +14,7 @@ from fastapi import FastAPI, File, HTTPException, Path, Request, UploadFile
 
 import backend
 from guards import INTENDED_USE, INTENDED_USE_HEADER, declares_synthetic
-from models import TECH_ID, AttestationIn, CaseIn, ReviewDecisionIn
+from models import TECH_ID, AttestationIn, CaseIn, ReviewCycleIn, ReviewDecisionIn
 
 MAX_PDF_BYTES = 20 * 1024 * 1024
 
@@ -142,9 +142,11 @@ def create_attestation(attestation: AttestationIn):
 # --- Orquestração -----------------------------------------------------------------------------
 
 @app.post("/api/review-cycle/runs", status_code=202)
-def run_review_cycle():
-    """Dispara iasx_review_cycle (pipeline → Jev → verificação on-chain → pipeline)."""
-    return {"run_id": backend.run_review_cycle()}
+def run_review_cycle(cycle: ReviewCycleIn | None = None):
+    """Dispara iasx_review_cycle (pipeline → Jev → verificação on-chain → pipeline).
+    Corpo opcional {"mode": "decisions_only"} depois do signoff: pula a extração e o Jev."""
+    mode = (cycle or ReviewCycleIn()).mode
+    return {"run_id": backend.run_review_cycle(mode), "mode": mode}
 
 
 @app.get("/api/review-cycle/runs/{run_id}")

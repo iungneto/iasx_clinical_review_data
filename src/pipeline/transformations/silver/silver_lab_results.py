@@ -27,6 +27,7 @@ _RESULT_SCHEMA = T.ArrayType(
             T.StructField("unit", T.StringType()),
             T.StructField("ref_low", T.DoubleType()),
             T.StructField("ref_high", T.DoubleType()),
+            T.StructField("ref_kind", T.StringType()),
             T.StructField("extractor_version", T.StringType()),
         ]
     )
@@ -48,7 +49,7 @@ POLICY = spark.conf.get("iasx.policy_schema")  # funções de column mask (src/s
         f"char_end INT, source_text STRING MASK {POLICY}.iasx_mask_document_text, exam_date DATE, "
         f"date_source_text STRING MASK {POLICY}.iasx_mask_document_text, test_name_raw STRING, test_code STRING, "
         "test_known BOOLEAN, value_raw STRING, value DOUBLE, value_status STRING, unit STRING, ref_low DOUBLE, "
-        "ref_high DOUBLE, extractor_version STRING, measurement_id STRING, processed_at TIMESTAMP"
+        "ref_high DOUBLE, ref_kind STRING, extractor_version STRING, measurement_id STRING, processed_at TIMESTAMP"
     ),
 )
 @dp.expect_all_or_drop(

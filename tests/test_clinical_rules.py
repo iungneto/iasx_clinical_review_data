@@ -181,3 +181,111 @@ def test_gabarito_covers_every_case_with_expected_findings(synthetic):
         ("GAP", "NON_TEXTUAL_PAGE"),
     ]:
         assert expected in covered
+
+
+# --- laudo em tabela (uma célula por linha no texto do PDF) ---------------------------------------
+
+TABLE_PAGE = """LAUDO MÉDICO
+DOCUMENTO SINTÉTICO — IASX CLINICAL REVIEW
+Paciente
+Paciente Sintético E
+Data de nascimento
+01/01/1970
+Data do exame
+10/09/2026
+Médico responsável
+Dr. Sintético Responsável
+CRM
+CRM-SP 000000
+RESULTADOS
+Exame
+Resultado
+Unidade
+Valor de referência
+Hemoglobina
+12,8
+g/dL
+12,0–16,0
+Glicemia de jejum
+101
+mg/dL
+70–99
+Colesterol total
+228
+mg/dL
+<190
+HDL-colesterol
+48
+mg/dL
+>40
+Sódio
+ilegível
+mEq/L
+135–145
+CONCLUSÃO
+Resultados apresentados conforme valores de referência informados pelo laboratório.
+Dr. Sintético Responsável — CRM-SP 000000
+"""
+
+
+def test_table_layout_extracts_every_row_with_its_date():
+    results = by_code(parse_page(TABLE_PAGE))
+    assert sorted(results) == ["CHOL", "GLU", "HDL", "HGB", "NA"]
+    hgb = results["HGB"]
+    assert (hgb["value"], hgb["unit"], hgb["ref_low"], hgb["ref_high"], hgb["ref_kind"]) == (12.8, "g/dL", 12.0, 16.0, "RANGE")
+    assert all(r["exam_date"] == "2026-09-10" for r in results.values())
+    assert results["NA"]["value_status"] == "ILLEGIBLE" and results["NA"]["value"] is None
+
+
+def test_table_row_source_spans_its_cells():
+    glu = by_code(parse_page(TABLE_PAGE))["GLU"]
+    assert TABLE_PAGE[glu["char_start"] : glu["char_end"]] == glu["source_text"] == "Glicemia de jejum\n101\nmg/dL\n70–99"
+
+
+def test_one_sided_reference_is_kept_as_the_document_states():
+    results = by_code(parse_page(TABLE_PAGE))
+    assert (results["CHOL"]["ref_low"], results["CHOL"]["ref_high"], results["CHOL"]["ref_kind"]) == (None, 190.0, "LT")
+    assert (results["HDL"]["ref_low"], results["HDL"]["ref_high"], results["HDL"]["ref_kind"]) == (40.0, None, "GT")
+
+
+def test_table_ends_at_the_next_section():
+    assert not any(r["source_text"].startswith("CONCLUS") for r in parse_page(TABLE_PAGE))
+
+
+def test_table_cell_without_unit_or_range_is_not_filled():
+    page = "Exame\nResultado\nUnidade\nPotássio\n4,5\nCreatinina\n0,9\nmg/dL\n"
+    k, crea = (by_code(parse_page(page))[c] for c in ("K", "CREA"))
+    assert (k["value"], k["unit"], k["ref_low"], k["ref_high"], k["ref_kind"]) == (4.5, None, None, None, None)
+    assert (crea["value"], crea["unit"], crea["ref_kind"]) == (0.9, "mg/dL", None)
+
+
+def test_table_ambiguous_value_is_flagged_never_picked():
+    (r,) = parse_page("Exame\nResultado\nUnidade\nProteína C reativa\n< 0,5\nmg/dL\n0,0–0,5\n")
+    assert r["test_code"] == "CRP" and r["value_status"] == "AMBIGUOUS"
+    assert (r["value"], r["unit"], r["ref_low"], r["ref_high"]) == (None, None, None, None)
+
+
+def test_cells_outside_a_table_are_not_results():
+    assert parse_page("Hemoglobina\n12,8\ng/dL\n12,0–16,0\n") == []
+
+
+def test_inline_results_have_range_kind():
+    hgb = by_code(parse_page(PAGE))["HGB"]
+    assert hgb["ref_kind"] == "RANGE"
+    assert by_code(parse_page(PAGE))["GLU"]["ref_kind"] is None
+
+
+def test_label_on_its_own_line_is_masked_everywhere():
+    masked = mask_identifiers(TABLE_PAGE)
+    assert len(masked) == len(TABLE_PAGE)
+    for secret in ("Paciente Sintético E", "01/01/1970", "Dr. Sintético Responsável", "000000"):
+        assert secret not in masked
+    assert masked.splitlines()[-1].startswith("***")  # assinatura do rodapé
+
+
+def test_masking_a_table_page_keeps_results_and_offsets():
+    assert parse_page(mask_identifiers(TABLE_PAGE)) == parse_page(TABLE_PAGE)
+
+
+def test_exam_date_label_is_not_masked():
+    assert "10/09/2026" in mask_identifiers(TABLE_PAGE)

@@ -24,6 +24,11 @@ class CaseIn(BaseModel):
     manual_review_seconds_baseline: Optional[int] = Field(default=None, ge=0)
 
 
+class ReviewCycleIn(BaseModel):
+    # decisions_only: só chegaram decisões/signoff; o job pula a extração e o Jev (iasx_orchestration.job.yml).
+    mode: Literal["full", "decisions_only"] = "full"
+
+
 class ReviewDecisionIn(BaseModel):
     review_id: str = Field(pattern=TECH_ID)
     scope: Literal["FINDING", "REVIEW"]

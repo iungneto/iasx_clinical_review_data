@@ -197,3 +197,9 @@ def test_review_cycle_can_be_triggered_and_followed(api):
     run_id = api.post("/api/review-cycle/runs").json()["run_id"]
     assert api.get(f"/api/review-cycle/runs/{run_id}").json()["result_state"] == "SUCCESS"
     assert api.get("/api/review-cycle/runs/999999").status_code == 404
+
+
+def test_review_cycle_after_signoff_skips_extraction(api):
+    assert api.post("/api/review-cycle/runs").json()["mode"] == "full"
+    assert api.post("/api/review-cycle/runs", json={"mode": "decisions_only"}).json()["mode"] == "decisions_only"
+    assert api.post("/api/review-cycle/runs", json={"mode": "tudo"}).status_code == 422

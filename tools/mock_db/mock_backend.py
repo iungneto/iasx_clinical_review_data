@@ -151,9 +151,9 @@ def feed_records(feed: str) -> list[dict]:
             for line in body.decode("utf-8").splitlines()]
 
 
-def run_review_cycle() -> int:
+def run_review_cycle(mode: str = "full") -> int:
     run_id = 1000 + len(RUNS)
-    RUNS[run_id] = {"life_cycle_state": "TERMINATED", "result_state": "SUCCESS"}
+    RUNS[run_id] = {"life_cycle_state": "TERMINATED", "result_state": "SUCCESS", "mode": mode}
     return run_id
 
 
