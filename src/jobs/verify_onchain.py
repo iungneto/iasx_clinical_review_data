@@ -8,6 +8,10 @@
 # MAGIC    descrito em `docs/onchain_account_layout.md` (`onchain_layout.py`);
 # MAGIC 3. grava o resultado em `landing/attestation_verifications/`.
 # MAGIC
+# MAGIC Recibos do emulador (`cluster = emulated`, gerados pela API com `solana_mode = emulated`) não chamam o RPC:
+# MAGIC a conta é reconstruída a partir do recibo (`emulated_account`) e passa pelo mesmo `decode_account`.
+# MAGIC Com `solana_mode = devnet`, recibos emulados são recusados.
+# MAGIC
 # MAGIC A comparação dos hashes on-chain com o payload recalculado é feita na pipeline (`gold_review_status`):
 # MAGIC é ela que decide se a revisão passa para **ATTESTED**.
 
@@ -17,11 +21,15 @@ dbutils.widgets.text("fq_schema", "workspace.iasx_clinical")
 dbutils.widgets.text("landing_root", "/Volumes/workspace/iasx_clinical/landing")
 dbutils.widgets.text("solana_rpc_url", "https://api.devnet.solana.com")
 dbutils.widgets.text("solana_program_id", "")
+dbutils.widgets.text("solana_mode", "devnet")
 
 fq_schema = dbutils.widgets.get("fq_schema")
 landing_root = dbutils.widgets.get("landing_root").rstrip("/")
 rpc_url = dbutils.widgets.get("solana_rpc_url")
 program_id = dbutils.widgets.get("solana_program_id")
+solana_mode = dbutils.widgets.get("solana_mode")
+if solana_mode not in ("devnet", "emulated"):
+    raise ValueError(f"solana_mode inválido: {solana_mode!r} (use devnet ou emulated)")
 
 # COMMAND ----------
 
@@ -35,7 +43,7 @@ from datetime import datetime, timezone
 import requests
 
 sys.path.insert(0, os.getcwd())  # o notebook roda em src/jobs, ao lado de onchain_layout.py
-from onchain_layout import assert_devnet, decode_account, review_id_hash  # noqa: E402
+from onchain_layout import assert_devnet, decode_account, emulated_account, review_id_hash  # noqa: E402
 
 assert_devnet(rpc_url)
 
@@ -64,20 +72,28 @@ def verify(att) -> dict:
         "error": None,
     }
     try:
-        status = rpc("getSignatureStatuses", [[att.tx_signature], {"searchTransactionHistory": True}])["value"][0]
-        result["tx_confirmed"] = bool(
-            status and status.get("err") is None and status.get("confirmationStatus") in ("confirmed", "finalized")
-        )
-        info = rpc("getAccountInfo", [att.pda_address, {"encoding": "base64", "commitment": "confirmed"}])
-        result["slot"] = info["context"]["slot"]
-        account = info["value"]
-        if account is None:
-            result["error"] = "PDA não encontrada"
-            return result
-        if program_id and account["owner"] != program_id:
-            result["error"] = f"owner inesperado: {account['owner']}"
-            return result
-        decoded = decode_account(base64.b64decode(account["data"][0]))
+        if att.cluster == "emulated":
+            if solana_mode != "emulated":
+                result["error"] = "atestação emulada recusada: solana_mode = devnet"
+                return result
+            result["tx_confirmed"] = True
+            data = emulated_account(att)
+        else:
+            status = rpc("getSignatureStatuses", [[att.tx_signature], {"searchTransactionHistory": True}])["value"][0]
+            result["tx_confirmed"] = bool(
+                status and status.get("err") is None and status.get("confirmationStatus") in ("confirmed", "finalized")
+            )
+            info = rpc("getAccountInfo", [att.pda_address, {"encoding": "base64", "commitment": "confirmed"}])
+            result["slot"] = info["context"]["slot"]
+            account = info["value"]
+            if account is None:
+                result["error"] = "PDA não encontrada"
+                return result
+            if program_id and account["owner"] != program_id:
+                result["error"] = f"owner inesperado: {account['owner']}"
+                return result
+            data = base64.b64decode(account["data"][0])
+        decoded = decode_account(data)
         if decoded["review_id_hash"] != review_id_hash(att.review_id):
             result["error"] = "review_id_hash on-chain não corresponde ao review_id"
             return result
@@ -96,7 +112,8 @@ def verify(att) -> dict:
 # COMMAND ----------
 
 to_verify = spark.sql(f"""
-  SELECT a.review_id, a.pda_address, a.tx_signature
+  SELECT a.review_id, a.cluster, a.pda_address, a.tx_signature, a.input_hash, a.analysis_hash, a.reviewed_hash,
+         a.workflow_version, a.model_version, a.reviewer_tech_id, a.submitted_at
   FROM {fq_schema}.silver_attestations a
   LEFT JOIN {fq_schema}.silver_attestation_verifications v ON v.review_id = a.review_id
   WHERE v.review_id IS NULL
@@ -104,7 +121,7 @@ to_verify = spark.sql(f"""
      OR v.error IS NOT NULL
      OR NOT v.tx_confirmed
 """).collect()
-print(f"{len(to_verify)} atestações para verificar em {rpc_url}")
+print(f"{len(to_verify)} atestações para verificar (solana_mode = {solana_mode}, RPC {rpc_url})")
 
 if to_verify:
     now = datetime.now(timezone.utc).isoformat()

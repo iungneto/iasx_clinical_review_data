@@ -67,10 +67,20 @@ A pipeline, então, compara o que está on-chain com o payload recalculado — e
 | `AI_REVIEW_READY` | análise pronta, nada pendente, falta o *signoff* |
 | `CONFIRMED` / `CORRECTED` | signoff feito (`CORRECTED` se houve alguma correção) |
 | `ATTESTED` | atestação on-chain **verificada** e hashes on-chain = payload recalculado |
+| `ATTESTED_EMULATED` | mesma conferência de hashes, mas a atestação veio do emulador da Solana (`cluster = emulated`); **não** é finalizada (`is_finalized = false`) |
 
-`onchain_status`: `NOT_SUBMITTED` → `SUBMITTED` → `VERIFIED` | `VERIFICATION_FAILED` | `HASH_MISMATCH`.
+`onchain_status`: `NOT_SUBMITTED` → `SUBMITTED` → `VERIFIED` | `EMULATED_VERIFIED` | `VERIFICATION_FAILED` | `HASH_MISMATCH`.
 `HASH_MISMATCH` aparece se algo mudar depois da atestação (nova decisão, novo PDF): a revisão deixa de estar
 finalizada até uma nova atestação. É isso que torna a blockchain parte da lógica de encerramento.
+
+### Emulador da Solana (`solana_mode = emulated`)
+
+Enquanto o programa de atestação não está publicado na Devnet, o target `dev` usa `solana_mode = emulated`:
+`POST /api/reviews/{review_id}/emulated-attestation` gera um recibo com `cluster = emulated` (endereços base58
+válidos, nenhuma transação) e dispara o ciclo completo; o `verify_onchain` reconstrói a conta da PDA a partir do
+recibo (`onchain_layout.emulated_account`) e a decodifica com o mesmo `decode_account`, sem chamar o RPC. A gold
+faz a comparação de hashes normal e marca `ATTESTED_EMULATED`. Ao publicar o programa, troque `solana_mode`
+para `devnet` e preencha `solana_program_id`; com `devnet`, recibos emulados são recusados na verificação.
 
 ## Regras de segurança implementadas
 
@@ -84,7 +94,7 @@ finalizada até uma nova atestação. É isso que torna a blockchain parte da l�
 | Somente dados sintéticos | API exige `data_classification = SYNTHETIC` e PDF com a declaração; pipeline não propaga texto sem a declaração (`NOT_SYNTHETIC_DOCUMENT`) |
 | Identificadores diretos | nome, CPF, CNS, nascimento, contato e médico mascarados antes da silver; bronze com conteúdo bruto fica restrita |
 | Rastreabilidade de versão | `extractor_version`, `jev_model`, `jev_prompt_version`, hash do envio e resposta bruta do Jev |
-| Solana só na Devnet | API (`cluster = devnet`), expectation em `silver_attestations` e `assert_devnet` em `verify_onchain` |
+| Solana só na Devnet | API (`cluster = devnet`), expectation em `silver_attestations` e `assert_devnet` em `verify_onchain`; o emulador (`cluster = emulated`) não envia transação e nunca finaliza a revisão |
 | Chaves fora do código | chave do Jev em secret scope; token Databricks só no backend |
 
 ## Por que estes componentes

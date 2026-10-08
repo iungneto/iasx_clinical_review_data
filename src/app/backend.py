@@ -53,7 +53,7 @@ def query(statement: str, **params) -> list[dict]:
 def list_cases() -> list[dict]:
     return query(
         """SELECT case_id, review_id, scenario, review_state, onchain_status, is_finalized,
-                  n_documents, n_findings, n_pending_human, tx_signature, submitted_at, verified_at
+                  n_documents, n_findings, n_pending_human, tx_signature, cluster, submitted_at, verified_at
            FROM {s}.gold_review_status
            ORDER BY created_at DESC"""
     )

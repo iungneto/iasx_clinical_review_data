@@ -1,8 +1,10 @@
 -- Máquina de estados da revisão. Regra do produto: a revisão só é FINALIZADA (ATTESTED)
 -- quando existe atestação on-chain verificada cujos hashes batem com o payload recalculado agora.
 -- Se qualquer dado mudar depois da atestação, os hashes divergem e o caso volta a não finalizado.
+-- Atestação do emulador (cluster = 'emulated', solana_mode = emulated) vira ATTESTED_EMULATED: mesma
+-- comparação de hashes, mas nunca é finalizada nem se confunde com uma atestação real.
 CREATE OR REFRESH MATERIALIZED VIEW gold_review_status
-COMMENT 'Estado atual de cada revisão: CREATED → PROCESSING → AI_REVIEW_READY / HUMAN_REVIEW_REQUIRED → CONFIRMED / CORRECTED → ATTESTED.'
+COMMENT 'Estado atual de cada revisão: CREATED → PROCESSING → AI_REVIEW_READY / HUMAN_REVIEW_REQUIRED → CONFIRMED / CORRECTED → ATTESTED (ATTESTED_EMULATED no emulador da Solana).'
 TBLPROPERTIES ('iasx.layer' = 'gold')
 AS WITH onchain AS (
   SELECT
@@ -36,7 +38,7 @@ AS WITH onchain AS (
        AND v.onchain_input_hash = p.input_hash
        AND v.onchain_analysis_hash = p.analysis_hash
        AND v.onchain_reviewed_hash = p.reviewed_hash
-        THEN 'VERIFIED'
+        THEN CASE WHEN a.cluster = 'emulated' THEN 'EMULATED_VERIFIED' ELSE 'VERIFIED' END
       ELSE 'HASH_MISMATCH'
     END AS onchain_status
   FROM silver_cases c
@@ -48,6 +50,7 @@ SELECT
   *,
   CASE
     WHEN onchain_status = 'VERIFIED' THEN 'ATTESTED'
+    WHEN onchain_status = 'EMULATED_VERIFIED' THEN 'ATTESTED_EMULATED'
     WHEN n_documents = 0 THEN 'CREATED'
     WHEN n_jev_pending > 0 THEN 'PROCESSING'
     WHEN n_pending_human > 0 THEN 'HUMAN_REVIEW_REQUIRED'

@@ -70,6 +70,7 @@ resources:
               fq_schema: ${var.catalog}.${resources.schemas.iasx_schema.name}
               solana_rpc_url: ${var.solana_rpc_url}
               solana_program_id: ${var.solana_program_id}
+              solana_mode: ${var.solana_mode}
 
         - task_key: refresh_review_state
           depends_on:

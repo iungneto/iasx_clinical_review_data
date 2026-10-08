@@ -52,8 +52,12 @@ workflow_version = dbutils.widgets.get("workflow_version")
 # COMMAND ----------
 
 # Pendente = sem decisão, ou decisão gerada por outra versão das perguntas (mudança de prompt é rastreada e reavaliada).
-# Revisão já finalizada (ATTESTED) não é reclassificada: mudaria o analysis_hash que está on-chain.
-open_reviews = spark.table(f"{fq_schema}.gold_review_status").where("NOT is_finalized").select("review_id")
+# Revisão já finalizada (ATTESTED ou ATTESTED_EMULATED) não é reclassificada: mudaria o analysis_hash que está on-chain.
+open_reviews = (
+    spark.table(f"{fq_schema}.gold_review_status")
+    .where("NOT is_finalized AND review_state <> 'ATTESTED_EMULATED'")
+    .select("review_id")
+)
 pending = (
     spark.table(f"{fq_schema}.gold_review_queue")
     .join(open_reviews, "review_id")

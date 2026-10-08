@@ -6,6 +6,7 @@ Só aceita dados sintéticos e marca toda resposta com a finalidade pretendida (
 Documentação interativa: <url do app>/docs
 """
 
+import os
 from datetime import datetime, timezone
 from typing import Annotated
 
@@ -13,10 +14,16 @@ from databricks.sdk.errors import AlreadyExists, NotFound, ResourceConflict
 from fastapi import FastAPI, File, HTTPException, Path, Request, UploadFile
 
 import backend
+import solana_emulator
 from guards import INTENDED_USE, INTENDED_USE_HEADER, declares_synthetic
 from models import TECH_ID, AttestationIn, CaseIn, ReviewCycleIn, ReviewDecisionIn
 
 MAX_PDF_BYTES = 20 * 1024 * 1024
+
+
+def solana_mode() -> str:
+    # "emulated" enquanto o programa de atestação não está publicado na Devnet (var solana_mode do bundle).
+    return os.getenv("IASX_SOLANA_MODE", "devnet")
 
 app = FastAPI(title="IASX Clinical Review — API do JEV", version="1.1.0", description=INTENDED_USE)
 
@@ -52,7 +59,7 @@ def _write(feed: str, record: dict) -> dict:
 @app.get("/api/health")
 def health():
     backend.query("SELECT 1 AS ok")
-    return {"status": "ok", "schema": backend.FQ_SCHEMA, "intended_use": INTENDED_USE}
+    return {"status": "ok", "schema": backend.FQ_SCHEMA, "intended_use": INTENDED_USE, "solana_mode": solana_mode()}
 
 
 @app.get("/api/whoami")
@@ -137,6 +144,20 @@ def create_review_decision(decision: ReviewDecisionIn):
 @app.post("/api/attestations", status_code=201)
 def create_attestation(attestation: AttestationIn):
     return _write("attestations", {**attestation.model_dump(), "submitted_at": _now()})
+
+
+@app.post("/api/reviews/{review_id}/emulated-attestation", status_code=201)
+def create_emulated_attestation(review_id: TechId):
+    """Atesta no emulador da Solana (solana_mode = emulated): grava o recibo e dispara o ciclo completo,
+    que ingere o recibo antes da verificação. A revisão vira ATTESTED_EMULATED, nunca ATTESTED."""
+    if solana_mode() != "emulated":
+        raise HTTPException(409, "emulador da Solana desligado (solana_mode = devnet)")
+    payload = _one(backend.attestation_payload(review_id), "payload de atestação")
+    if not payload["ready_for_attestation"]:
+        raise HTTPException(409, "payload ainda não está pronto para a atestação (signoff ou decisões pendentes)")
+    submitted_at = _now()
+    written = _write("attestations", {**solana_emulator.receipt(payload, submitted_at), "submitted_at": submitted_at})
+    return {**written, "run_id": backend.run_review_cycle("full"), "mode": "full"}
 
 
 # --- Orquestração -----------------------------------------------------------------------------

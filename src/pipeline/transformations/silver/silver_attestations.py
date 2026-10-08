@@ -8,8 +8,9 @@ _SHA256 = "RLIKE '^[0-9a-f]{64}$'"
     {
         "has_keys": "review_id IS NOT NULL AND submitted_at IS NOT NULL",
         "has_tx": "tx_signature IS NOT NULL AND pda_address IS NOT NULL",
-        # MVP: Solana somente na Devnet, apenas atestação técnica.
-        "devnet_only": "cluster = 'devnet'",
+        # MVP: Solana somente na Devnet, apenas atestação técnica; "emulated" vem do emulador da API
+        # (solana_mode = emulated) e nunca vira ATTESTED na gold.
+        "devnet_or_emulated": "cluster IN ('devnet', 'emulated')",
         "hashes_are_sha256": f"input_hash {_SHA256} AND analysis_hash {_SHA256} AND reviewed_hash {_SHA256}",
     }
 )

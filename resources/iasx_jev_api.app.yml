@@ -21,6 +21,8 @@ resources:
             value: ${var.catalog}.${resources.schemas.iasx_schema.name}
           - name: IASX_LANDING_ROOT
             value: /Volumes/${var.catalog}/${resources.schemas.iasx_schema.name}/${resources.volumes.landing.name}
+          - name: IASX_SOLANA_MODE
+            value: ${var.solana_mode}
       resources:
         - name: sql-warehouse
           sql_warehouse:

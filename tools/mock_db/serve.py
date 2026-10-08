@@ -5,6 +5,7 @@
 As escritas ficam só em memória e somem ao encerrar. Para ensaiar o frontend; não substitui o app publicado.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ sys.path[:0] = [str(HERE), str(HERE.parents[1] / "src/app")]
 import mock_backend  # noqa: E402
 
 sys.modules["backend"] = mock_backend  # app.py faz "import backend": passa a usar o mock
+os.environ.setdefault("IASX_SOLANA_MODE", "emulated")  # como o target dev, sem programa publicado
 
 from app import app  # noqa: E402
 

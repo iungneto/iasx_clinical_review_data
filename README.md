@@ -156,6 +156,11 @@ push a partir do workspace, cadastre um token do GitHub em *Settings → Linked 
 5. Rode `iasx_review_cycle` de novo → `verify_onchain` lê a PDA, a pipeline compara os hashes e o caso vira
    **ATTESTED** (`gold_review_status.is_finalized = true`).
 
+Sem o programa publicado, o target `dev` usa o **emulador da Solana** (`solana_mode = emulated`): os passos 4 e 5
+viram `POST /api/reviews/{review_id}/emulated-attestation`, que grava um recibo `cluster = emulated` e dispara o
+ciclo. O caso termina em **ATTESTED_EMULATED** (não finalizado). Detalhes em
+[docs/architecture.md](docs/architecture.md#emulador-da-solana-solana_mode--emulated).
+
 ### 6. API para o frontend JEV
 
 O **JEV** (frontend externo) conversa com o Databricks só pela API `iasx-jev-api`, um Databricks App (FastAPI)
@@ -181,6 +186,7 @@ A documentação interativa (OpenAPI) fica em `<url do app>/docs`.
 | POST | `/api/cases/{case_id}/documents/{document_id}` | upload do PDF (multipart `file`) → `landing/pdfs/` |
 | POST | `/api/review-decisions` | CONFIRM / CORRECT / REJECT / SIGNOFF → `landing/review_decisions/` |
 | POST | `/api/attestations` | recibo da tx Solana → `landing/attestations/` |
+| POST | `/api/reviews/{review_id}/emulated-attestation` | só com `solana_mode = emulated`: recibo emulado (sem transação) → `landing/attestations/` e dispara o ciclo |
 | POST · GET | `/api/review-cycle/runs` · `/runs/{run_id}` | dispara `iasx_review_cycle` e acompanha a execução |
 
 A API preenche `created_at`, `decided_at` e `submitted_at` e valida os contratos de
@@ -190,7 +196,7 @@ execução de `iasx_review_cycle`.
 **Somente dados sintéticos.** `POST /api/cases` exige `"data_classification": "SYNTHETIC"`, e o upload recusa
 (422) PDF cujo texto não traga a declaração "Documento sintético". Campos técnicos (`case_id`, `scenario`,
 `reviewer_tech_id`, unidades, hashes, endereços Solana) não aceitam texto livre, e a atestação só aceita
-`cluster = devnet`. Toda resposta traz o cabeçalho `X-IASX-Intended-Use`, e `GET /api/health` devolve o
+`cluster = devnet` (recibos `emulated` só são gerados pela própria API, com `solana_mode = emulated`). Toda resposta traz o cabeçalho `X-IASX-Intended-Use`, e `GET /api/health` devolve o
 texto da finalidade pretendida para o frontend exibir.
 
 **Autenticação.** Todo request precisa de `Authorization: Bearer <token OAuth do Databricks>`. As chamadas

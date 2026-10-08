@@ -67,3 +67,9 @@ class AttestationIn(BaseModel):
     model_version: str = Field(pattern=ONCHAIN_VERSION)
     status: Literal["SUBMITTED"] = "SUBMITTED"
     reviewer_tech_id: str = Field(pattern=TECH_ID)
+
+
+class EmulatedAttestationIn(AttestationIn):
+    """Recibo do emulador (solana_emulator.py): nenhuma transação real; só a API o gera, nunca o cliente."""
+
+    cluster: Literal["emulated"] = "emulated"

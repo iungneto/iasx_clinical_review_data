@@ -34,6 +34,11 @@ variables:
   solana_program_id:
     description: Program ID do programa de atestação na Devnet (preencher após o deploy do programa).
     default: "REPLACE_WITH_PROGRAM_ID"
+  solana_mode:
+    description: >-
+      devnet = envio e verificação reais na Devnet; emulated = a API emula o envio (sem transação) e a revisão
+      vira ATTESTED_EMULATED, nunca ATTESTED. Use emulated só enquanto o programa de atestação não está publicado.
+    default: devnet
 
 targets:
   dev:
@@ -43,6 +48,9 @@ targets:
       # Deploy pela Git folder do workspace (botão Deploy) também copia os arquivos para .bundle/, como o CLI.
       # Assim, pull ou troca de branch na Git folder só chega à pipeline e aos jobs no próximo deploy.
       source_linked_deployment: false
+    variables:
+      # Sem Program ID ainda: o dev usa o emulador da Solana. Volte para devnet ao publicar o programa.
+      solana_mode: emulated
     workspace:
       # URL do workspace Free Edition, ex.: https://dbc-xxxxxxxx-xxxx.cloud.databricks.com
       host: https://dbc-c45b5519-fb4f.cloud.databricks.com

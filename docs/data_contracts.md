@@ -46,7 +46,8 @@ Exemplo: `tools/sample_events/review_decisions_case_c.json`.
 `review_id`, `cluster`, `program_id`, `pda_address`, `tx_signature`, `input_hash`, `analysis_hash`,
 `reviewed_hash` (copiados de `gold_attestation_payload`), `workflow_version`, `model_version`, `status`,
 `reviewer_tech_id`, `submitted_at`. Exemplo: `tools/sample_events/attestation_case_c.json`.
-No MVP, `cluster` é sempre `devnet` (a silver descarta outro valor) e `status` é `SUBMITTED`.
+No MVP, `cluster` é `devnet` ou, com `solana_mode = emulated`, `emulated` (recibo gerado pela própria API,
+sem transação; a silver descarta qualquer outro valor) e `status` é `SUBMITTED`.
 
 ## `attestation_verifications/*.json` — job `verify_onchain`
 

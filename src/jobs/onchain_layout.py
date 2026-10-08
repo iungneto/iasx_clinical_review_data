@@ -5,6 +5,7 @@ A conta guarda só hashes, versões, status e a carteira técnica do revisor: ne
 
 import hashlib
 import struct
+from datetime import datetime
 from urllib.parse import urlparse
 
 STATUS = {0: "CREATED", 1: "PROCESSING", 2: "AI_REVIEW_READY", 3: "HUMAN_REVIEW_REQUIRED",
@@ -23,6 +24,43 @@ def assert_devnet(rpc_url: str) -> None:
 def review_id_hash(review_id: str) -> str:
     # Seed da PDA: o review_id em texto não vai para a cadeia.
     return hashlib.sha256(review_id.encode()).hexdigest()
+
+
+def encode_account(
+    review_id: str,
+    input_hash: str,
+    analysis_hash: str,
+    reviewed_hash: str,
+    workflow_version: str,
+    model_version: str,
+    status: str = "ATTESTED",
+    reviewer: bytes = bytes(32),
+    attested_at: int = 0,
+    bump: int = 255,
+) -> bytes:
+    """Inverso de decode_account: os bytes que o programa grava na PDA (usado pelo emulador da Solana)."""
+    code = next(k for k, v in STATUS.items() if v == status)
+    data = bytes(8) + bytes.fromhex(review_id_hash(review_id))
+    data += b"".join(bytes.fromhex(h) for h in (input_hash, analysis_hash, reviewed_hash))
+    data += workflow_version.encode().ljust(32, b"\0") + model_version.encode().ljust(32, b"\0")
+    data += bytes([code]) + reviewer + struct.pack("<q", attested_at) + bytes([bump])
+    if len(data) != ACCOUNT_SIZE:
+        raise ValueError(f"conta com {len(data)} bytes, esperado {ACCOUNT_SIZE} (versão maior que 32 bytes?)")
+    return data
+
+
+def emulated_account(att) -> bytes:
+    """Conta que o programa teria gravado para um recibo emulado (cluster = "emulated"): os hashes do recibo.
+    Se os dados mudarem depois da atestação, a gold continua comparando com o payload recalculado."""
+    submitted_at = att.submitted_at
+    if isinstance(submitted_at, str):
+        submitted_at = datetime.fromisoformat(submitted_at)
+    return encode_account(
+        att.review_id, att.input_hash, att.analysis_hash, att.reviewed_hash,
+        att.workflow_version, att.model_version,
+        reviewer=hashlib.sha256(att.reviewer_tech_id.encode()).digest(),
+        attested_at=int(submitted_at.timestamp()),
+    )
 
 
 def decode_account(data: bytes) -> dict:
